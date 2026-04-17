@@ -1,0 +1,6 @@
+@echo off
+echo 构建项目...
+call pnpm run build
+echo.
+echo 启动生产服务器...
+call npx serve -s dist -l 5000

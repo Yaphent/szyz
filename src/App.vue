@@ -1,0 +1,46 @@
+<template>
+  <router-view />
+</template>
+
+<script setup lang="ts">
+</script>
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  width: 100%;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 主题色 */
+:root {
+  --el-color-primary: #0f3e7a;
+  --el-color-primary-light-3: #2a5298;
+  --el-color-primary-light-5: #3a64a8;
+  --el-color-primary-light-7: #4a78b8;
+  --el-color-primary-light-8: #5a88c8;
+  --el-color-primary-light-9: #6a98d8;
+  --el-color-primary-dark-2: #0a2e60;
+}
+
+/* 滚动条样式 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+</style>

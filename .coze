@@ -1,0 +1,13 @@
+[project]
+requires = [ "nodejs-24" ]
+template = "vite"
+version = "0.0.14"
+appliedPatches = [ ]
+
+[dev]
+build = [ "pnpm", "install" ]
+run = [ "pnpm", "dev" ]
+
+[deploy]
+build = [ "pnpm", "run", "build" ]
+run = [ "npx", "serve", "-s", "dist", "-l", "5000" ]
