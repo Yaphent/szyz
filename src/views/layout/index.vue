@@ -15,21 +15,29 @@
         text-color="#a0a5b0"
         active-text-color="#fff"
       >
-        <el-menu-item index="/dashboard">
-          <el-icon><Odometer /></el-icon>
-          <template #title>仪表盘</template>
-        </el-menu-item>
-        
-        <el-sub-menu index="/system">
-          <template #title>
-            <el-icon><Setting /></el-icon>
-            <span>系统管理</span>
-          </template>
-          <el-menu-item index="/system/user">用户管理</el-menu-item>
-          <el-menu-item index="/system/role">角色管理</el-menu-item>
-          <el-menu-item index="/system/menu">菜单管理</el-menu-item>
-          <el-menu-item index="/system/dept">单位管理</el-menu-item>
-        </el-sub-menu>
+        <!-- 遍历用户菜单 -->
+        <template v-for="menu in userMenus" :key="menu.menuId">
+          <!-- 有子菜单的目录 -->
+          <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.path || '/'+menu.menuId">
+            <template #title>
+              <el-icon><component :is="getIcon(menu.icon)" /></el-icon>
+              <span>{{ menu.name }}</span>
+            </template>
+            <el-menu-item 
+              v-for="child in menu.children" 
+              :key="child.menuId" 
+              :index="child.path"
+            >
+              {{ child.name }}
+            </el-menu-item>
+          </el-sub-menu>
+          
+          <!-- 没有子菜单的菜单项 -->
+          <el-menu-item v-else :index="menu.path">
+            <el-icon><component :is="getIcon(menu.icon)" /></el-icon>
+            <template #title>{{ menu.name }}</template>
+          </el-menu-item>
+        </template>
       </el-menu>
     </el-aside>
     
@@ -75,11 +83,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import { useUserStore } from '../../store/user';
-import { authApi } from '../../api';
+import { authApi, menuApi } from '../../api';
+import {
+  Odometer, Setting, User, Wallet, Menu, OfficeBuilding, Tools,
+  Fold, Expand, ArrowDown, ElementPlus
+} from '@element-plus/icons-vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -87,6 +99,27 @@ const userStore = useUserStore();
 
 const isCollapse = ref(false);
 const activeMenu = computed(() => route.path);
+
+// 图标映射
+const iconMap: Record<string, any> = {
+  'Odometer': Odometer,
+  'Setting': Setting,
+  'User': User,
+  'Wallet': Wallet,
+  'Menu': Menu,
+  'OfficeBuilding': OfficeBuilding,
+  'Tools': Tools
+};
+
+const getIcon = (iconName?: string) => {
+  return iconMap[iconName || ''] || Menu;
+};
+
+// 用户菜单
+const userMenus = computed(() => {
+  // 过滤出菜单类型的菜单（不包括按钮）
+  return userStore.menus.filter(menu => menu.menuType !== 'F');
+});
 
 const handleCommand = async (command: string) => {
   if (command === 'logout') {
@@ -104,6 +137,19 @@ const handleCommand = async (command: string) => {
     router.push('/login');
   }
 };
+
+// 组件挂载时获取菜单
+onMounted(async () => {
+  // 如果有 token 但没有菜单，则获取菜单
+  if (userStore.token && userStore.menus.length === 0) {
+    try {
+      const menuRes = await menuApi.getRoute();
+      userStore.setMenus(menuRes.data || []);
+    } catch (e) {
+      console.error('获取菜单失败', e);
+    }
+  }
+});
 </script>
 
 <style scoped>
@@ -113,8 +159,9 @@ const handleCommand = async (command: string) => {
 
 .aside {
   background-color: #1d1e23;
-  transition: width 0.3s;
   overflow-x: hidden;
+  overflow-y: auto;
+  transition: width 0.3s;
 }
 
 .logo {
@@ -122,46 +169,31 @@ const handleCommand = async (command: string) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   color: #fff;
   font-size: 16px;
   font-weight: bold;
-  background-color: #141414;
-}
-
-.logo img {
-  width: 32px;
-  height: 32px;
+  border-bottom: 1px solid #333;
 }
 
 .header {
-  background: #fff;
+  background-color: #fff;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 20px;
+  padding: 0 16px;
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
 }
 
 .collapse-btn {
-  font-size: 20px;
   cursor: pointer;
-  color: #606266;
-}
-
-.collapse-btn:hover {
-  color: #0f3e7a;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
+  font-size: 18px;
 }
 
 .user-info {
@@ -173,25 +205,21 @@ const handleCommand = async (command: string) => {
 
 .username {
   font-size: 14px;
-  color: #303133;
 }
 
 .main {
-  background: #f5f7fa;
-  padding: 20px;
+  background-color: #f5f7fa;
+  padding: 16px;
+  overflow-y: auto;
 }
 
+/* 菜单样式 */
 :deep(.el-menu) {
   border-right: none;
 }
 
-:deep(.el-menu-item),
-:deep(.el-sub-menu__title) {
-  height: 50px;
-  line-height: 50px;
-}
-
-:deep(.el-menu-item.is-active) {
-  background-color: #0f3e7a !important;
+:deep(.el-sub-menu .el-menu-item) {
+  min-width: 0;
+  padding-left: 48px !important;
 }
 </style>

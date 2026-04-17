@@ -67,7 +67,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
-import { authApi } from '../../api';
+import { authApi, menuApi } from '../../api';
 import { useUserStore } from '../../store/user';
 
 const router = useRouter();
@@ -125,6 +125,10 @@ const handleLogin = async () => {
     // 获取用户信息和权限
     const infoRes = await authApi.getUserInfo();
     userStore.setPerms(infoRes.data.perms);
+    
+    // 获取用户菜单
+    const menuRes = await menuApi.getRoute();
+    userStore.setMenus(menuRes.data || []);
     
     ElMessage.success('登录成功');
     router.push('/');
