@@ -154,6 +154,7 @@ INSERT INTO sys_menu (menu_id, parent_id, menu_type, name, path, component, perm
 (3, 0, 'M', '角色管理', '/system/role', NULL, NULL, NULL, 'Wallet', 3, 0, 1),
 (4, 0, 'M', '菜单管理', '/system/menu', NULL, NULL, NULL, 'Menu', 4, 0, 1),
 (5, 0, 'M', '单位管理', '/system/dept', NULL, NULL, NULL, 'OfficeBuilding', 5, 0, 1),
+(6, 0, 'M', '参数管理', '/system/config', NULL, NULL, NULL, 'Tools', 6, 0, 1),
 (100, 0, 'M', '仪表盘', '/dashboard', NULL, NULL, NULL, 'Odometer', 0, 0, 1),
 -- 二级菜单/按钮 - 系统管理
 (101, 1, 'C', '系统管理', '/system/index', 'system/index', 'sys:system:view', '/api/dept', '', 1, 0, 1),
@@ -180,7 +181,12 @@ INSERT INTO sys_menu (menu_id, parent_id, menu_type, name, path, component, perm
 (501, 5, 'C', '单位列表', '/system/dept/index', 'system/dept/index', 'sys:dept:list', '/api/dept/tree', '', 1, 0, 1),
 (502, 5, 'F', '新增单位', NULL, NULL, 'sys:dept:add', NULL, '', 1, 0, 1),
 (503, 5, 'F', '编辑单位', NULL, NULL, 'sys:dept:edit', NULL, '', 2, 0, 1),
-(504, 5, 'F', '删除单位', NULL, NULL, 'sys:dept:delete', NULL, '', 3, 0, 1);
+(504, 5, 'F', '删除单位', NULL, NULL, 'sys:dept:delete', NULL, '', 3, 0, 1),
+-- 参数管理按钮
+(601, 6, 'C', '参数列表', '/system/config/index', 'system/config/index', 'sys:config:list', '/api/config/page', '', 1, 0, 1),
+(602, 6, 'F', '新增参数', NULL, NULL, 'sys:config:add', NULL, '', 1, 0, 1),
+(603, 6, 'F', '编辑参数', NULL, NULL, 'sys:config:edit', NULL, '', 2, 0, 1),
+(604, 6, 'F', '删除参数', NULL, NULL, 'sys:config:delete', NULL, '', 3, 0, 1);
 
 -- ----------------------------------------
 -- 3. 初始化角色数据
@@ -216,7 +222,7 @@ SELECT 1, menu_id FROM sys_menu;
 
 -- 系统管理员拥有部分菜单权限
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES
-                                                 (2, 100), (2, 1), (2, 101), (2, 2), (2, 201), (2, 202), (2, 203), (2, 204), (2, 3), (2, 301), (2, 302), (2, 303);
+                                                 (2, 100), (2, 1), (2, 101), (2, 2), (2, 201), (2, 202), (2, 203), (2, 204), (2, 3), (2, 301), (2, 302), (2, 303), (2, 6), (2, 601);
 
 -- 普通用户只有基础权限
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES
@@ -229,3 +235,37 @@ INSERT INTO sys_user_dept (user_id, dept_id) VALUES
                                                  (1, 1), (1, 2), (1, 3), (1, 4), (1, 5), (1, 6), (1, 7), (1, 8),  -- 超级管理员管理所有单位
                                                  (2, 2), (2, 5), (2, 6),  -- 系统管理员管理技术研发部及子部门
                                                  (3, 5);  -- 普通用户只管理前端开发组
+
+-- ----------------------------------------
+-- 8. 系统参数表 (sys_config)
+-- ----------------------------------------
+CREATE TABLE IF NOT EXISTS sys_config (
+    config_id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    config_name VARCHAR(50) NOT NULL COMMENT '参数名称',
+    config_key VARCHAR(100) NOT NULL COMMENT '参数键名',
+    config_value VARCHAR(500) NOT NULL COMMENT '参数值',
+    config_type CHAR(1) DEFAULT 'S' COMMENT '类型：S字符串，N数值，B布尔',
+    remark VARCHAR(200) COMMENT '备注',
+    status TINYINT DEFAULT 1 COMMENT '状态：0禁用，1启用',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_config_key (config_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统参数表';
+
+CREATE INDEX idx_config_key ON sys_config(config_key);
+CREATE INDEX idx_config_type ON sys_config(config_type);
+CREATE INDEX idx_config_status ON sys_config(status);
+
+-- ----------------------------------------
+-- 9. 初始化系统参数数据
+-- ----------------------------------------
+INSERT INTO sys_config (config_name, config_key, config_value, config_type, remark, status) VALUES
+('系统名称', 'sys.system.name', '企业权限管理平台', 'S', '系统显示名称', 1),
+('系统Logo', 'sys.logo.url', '/logo.png', 'S', '系统Logo图片URL', 1),
+('登录验证码', 'sys.login.captcha', 'true', 'B', '是否启用登录验证码', 1),
+('单点登录', 'sys.login.sso', 'false', 'B', '是否启用单点登录', 1),
+('Token有效期', 'sys.token.expire', '24', 'N', 'JWT Token有效期(小时)', 1),
+('密码最小长度', 'sys.password.minLength', '6', 'N', '用户密码最小长度', 1),
+('文件上传大小', 'sys.upload.maxSize', '10', 'N', '单文件上传大小限制(MB)', 1),
+('允许文件类型', 'sys.upload.allowedTypes', 'jpg,jpeg,png,pdf,doc,docx,xls,xlsx', 'S', '允许上传的文件类型', 1),
+('系统公告', 'sys.announcement', '欢迎使用企业权限管理平台！', 'S', '系统公告内容', 1);

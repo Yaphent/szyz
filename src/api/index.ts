@@ -77,3 +77,15 @@ export const menuApi = {
 export const dashboardApi = {
   getStatistics: () => request.get('/dashboard/statistics')
 };
+
+// 参数管理API
+export const configApi = {
+  getPage: (params: any) => request.get('/config/page', { params }),
+  getList: () => request.get('/config/list'),
+  getById: (configId: number) => request.get(`/config/${configId}`),
+  getValueByKey: (configKey: string) => request.get(`/config/value/${configKey}`),
+  create: (data: any) => request.post('/config', data),
+  update: (data: any) => request.put('/config', data),
+  delete: (configId: number) => request.delete(`/config/${configId}`),
+  refreshCache: () => request.post('/config/refresh-cache')
+};

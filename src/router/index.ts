@@ -42,6 +42,12 @@ const routes: RouteRecordRaw[] = [
         name: 'DeptManage',
         component: () => import('../views/system/dept/index.vue'),
         meta: { title: '单位管理', icon: 'OfficeBuilding' }
+      },
+      {
+        path: 'system/config',
+        name: 'ConfigManage',
+        component: () => import('../views/system/config/index.vue'),
+        meta: { title: '参数管理', icon: 'Tools' }
       }
     ]
   }
