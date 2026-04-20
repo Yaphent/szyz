@@ -3,34 +3,31 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>参数管理</span>
-          <div>
+          <el-form :inline="true" :model="queryForm" class="header-form">
+            <el-form-item label="参数名称">
+              <el-input v-model="queryForm.configName" placeholder="请输入参数名称" clearable style="width: 150px" @keyup.enter="loadData" />
+            </el-form-item>
+            <el-form-item label="参数键名">
+              <el-input v-model="queryForm.configKey" placeholder="请输入参数键名" clearable style="width: 150px" @keyup.enter="loadData" />
+            </el-form-item>
+            <el-form-item label="参数类型">
+              <el-select v-model="queryForm.configType" placeholder="请选择" clearable style="width: 120px">
+                <el-option label="字符串" value="S" />
+                <el-option label="数值" value="N" />
+                <el-option label="布尔" value="B" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="loadData">查询</el-button>
+              <el-button @click="handleReset">重置</el-button>
+            </el-form-item>
+          </el-form>
+          <div class="header-buttons">
             <el-button type="primary" :icon="Plus" @click="handleAdd">新增参数</el-button>
             <el-button :icon="Refresh" @click="handleRefreshCache">刷新缓存</el-button>
           </div>
         </div>
       </template>
-      
-      <!-- 搜索表单 -->
-      <el-form :inline="true" :model="queryForm" class="search-form">
-        <el-form-item label="参数名称">
-          <el-input v-model="queryForm.configName" placeholder="请输入参数名称" clearable @keyup.enter="loadData" />
-        </el-form-item>
-        <el-form-item label="参数键名">
-          <el-input v-model="queryForm.configKey" placeholder="请输入参数键名" clearable @keyup.enter="loadData" />
-        </el-form-item>
-        <el-form-item label="参数类型">
-          <el-select v-model="queryForm.configType" placeholder="请选择" clearable>
-            <el-option label="字符串" value="S" />
-            <el-option label="数值" value="N" />
-            <el-option label="布尔" value="B" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="loadData">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
       
       <!-- 参数列表 -->
       <el-table :data="tableData" v-loading="loading" border stripe>
@@ -307,16 +304,50 @@ onMounted(() => {
 
 <style scoped>
 .config-manage {
-  padding: 16px;
+  height: 100%;
+}
+
+.config-manage :deep(.el-card) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.config-manage :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
-.search-form {
-  margin-bottom: 16px;
+.header-form {
+  margin: 0;
+  flex: 1;
+}
+
+.header-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.config-manage :deep(.el-table) {
+  flex: 1;
+}
+
+.config-manage :deep(.el-pagination) {
+  flex-shrink: 0;
+  margin-top: 16px;
 }
 </style>

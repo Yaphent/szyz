@@ -3,7 +3,6 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>菜单管理</span>
           <el-button type="primary" :icon="Plus" @click="handleAdd(null)">新增菜单</el-button>
         </div>
       </template>
@@ -216,9 +215,27 @@ onMounted(() => {
   height: 100%;
 }
 
+.menu-manage :deep(.el-card) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-manage :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.menu-manage :deep(.el-table) {
+  flex: 1;
 }
 </style>

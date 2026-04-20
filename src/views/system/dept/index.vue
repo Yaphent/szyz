@@ -3,7 +3,6 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>单位管理</span>
           <el-button type="primary" :icon="Plus" @click="handleAdd(null)">新增单位</el-button>
         </div>
       </template>
@@ -184,9 +183,27 @@ onMounted(() => {
   height: 100%;
 }
 
+.dept-manage :deep(.el-card) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dept-manage :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.dept-manage :deep(.el-table) {
+  flex: 1;
 }
 </style>

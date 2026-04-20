@@ -30,29 +30,26 @@
         <!-- 右侧用户列表 -->
         <el-main class="user-main">
           <div class="card-header">
-            <span>用户列表</span>
+            <el-form :inline="true" :model="queryForm" class="header-form">
+              <el-form-item label="用户名">
+                <el-input v-model="queryForm.username" placeholder="请输入用户名" clearable style="width: 150px" @keyup.enter="handleSearch" />
+              </el-form-item>
+              <el-form-item label="手机号">
+                <el-input v-model="queryForm.mobile" placeholder="请输入手机号" clearable style="width: 150px" @keyup.enter="handleSearch" />
+              </el-form-item>
+              <el-form-item label="状态">
+                <el-select v-model="queryForm.status" placeholder="请选择" clearable style="width: 120px">
+                  <el-option label="启用" :value="1" />
+                  <el-option label="禁用" :value="0" />
+                </el-select>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="handleSearch">查询</el-button>
+                <el-button @click="handleReset">重置</el-button>
+              </el-form-item>
+            </el-form>
             <el-button type="primary" :icon="Plus" @click="handleAdd">新增用户</el-button>
           </div>
-          
-          <!-- 搜索表单 -->
-          <el-form :inline="true" :model="queryForm" class="search-form">
-            <el-form-item label="用户名">
-              <el-input v-model="queryForm.username" placeholder="请输入用户名" clearable style="width: 150px" @keyup.enter="handleSearch" />
-            </el-form-item>
-            <el-form-item label="手机号">
-              <el-input v-model="queryForm.mobile" placeholder="请输入手机号" clearable style="width: 150px" @keyup.enter="handleSearch" />
-            </el-form-item>
-            <el-form-item label="状态">
-              <el-select v-model="queryForm.status" placeholder="请选择" clearable style="width: 120px">
-                <el-option label="启用" :value="1" />
-                <el-option label="禁用" :value="0" />
-              </el-select>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="handleSearch">查询</el-button>
-              <el-button @click="handleReset">重置</el-button>
-            </el-form-item>
-          </el-form>
           
           <!-- 用户列表 -->
           <el-table :data="tableData" v-loading="loading" border stripe>
@@ -433,21 +430,37 @@ onMounted(() => {
 }
 
 .user-main {
+  display: flex;
+  flex-direction: column;
   padding: 16px;
   background: #f5f7fa;
+  overflow: hidden;
 }
 
 .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  flex-shrink: 0;
   margin-bottom: 16px;
 }
 
-.search-form {
-  background: #fff;
-  padding: 16px;
-  border-radius: 4px;
-  margin-bottom: 12px;
+.header-form {
+  margin: 0;
+  flex: 1;
+}
+
+.header-form :deep(.el-form-item) {
+  margin-bottom: 0;
+}
+
+.user-main :deep(.el-table) {
+  flex: 1;
+}
+
+.user-main :deep(.el-pagination) {
+  flex-shrink: 0;
+  margin-top: 16px;
 }
 </style>
