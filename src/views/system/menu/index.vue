@@ -9,7 +9,11 @@
       
       <!-- 菜单树 -->
       <el-table :data="tableData" v-loading="loading" border stripe row-key="menuId">
-        <el-table-column type="index" label="序号" width="60" align="center" />
+        <el-table-column prop="name" label="序号" width="60" align="center">
+          <template #default="{ row }">
+            {{ row.menuType === 'M' || row.menuType === 'C' ? row.sort : '' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="name" label="菜单名称" width="200" />
         <el-table-column prop="icon" label="图标" width="100">
           <template #default="{ row }">
