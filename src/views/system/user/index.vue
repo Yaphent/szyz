@@ -37,13 +37,13 @@
           <!-- 搜索表单 -->
           <el-form :inline="true" :model="queryForm" class="search-form">
             <el-form-item label="用户名">
-              <el-input v-model="queryForm.username" placeholder="请输入用户名" clearable @keyup.enter="handleSearch" />
+              <el-input v-model="queryForm.username" placeholder="请输入用户名" clearable style="width: 150px" @keyup.enter="handleSearch" />
             </el-form-item>
             <el-form-item label="手机号">
-              <el-input v-model="queryForm.mobile" placeholder="请输入手机号" clearable @keyup.enter="handleSearch" />
+              <el-input v-model="queryForm.mobile" placeholder="请输入手机号" clearable style="width: 150px" @keyup.enter="handleSearch" />
             </el-form-item>
             <el-form-item label="状态">
-              <el-select v-model="queryForm.status" placeholder="请选择" clearable>
+              <el-select v-model="queryForm.status" placeholder="请选择" clearable style="width: 120px">
                 <el-option label="启用" :value="1" />
                 <el-option label="禁用" :value="0" />
               </el-select>
