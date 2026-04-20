@@ -148,18 +148,14 @@ INSERT INTO sys_dept (dept_id, parent_id, dept_name, dept_code, leader, phone, s
 -- 2. 初始化菜单数据
 -- ----------------------------------------
 INSERT INTO sys_menu (menu_id, parent_id, menu_type, name, path, component, perms, url, icon, sort, is_frame, status) VALUES
--- 一级菜单
-(1, 0, 'M', '系统管理', '/system', NULL, NULL, NULL, 'Setting', 1, 0, 1),
-(2, 0, 'M', '用户管理', '/system/user', NULL, NULL, NULL, 'User', 2, 0, 1),
-(3, 0, 'M', '角色管理', '/system/role', NULL, NULL, NULL, 'Wallet', 3, 0, 1),
-(4, 0, 'M', '菜单管理', '/system/menu', NULL, NULL, NULL, 'Menu', 4, 0, 1),
-(5, 0, 'M', '单位管理', '/system/dept', NULL, NULL, NULL, 'OfficeBuilding', 5, 0, 1),
-(6, 0, 'M', '参数管理', '/system/config', NULL, NULL, NULL, 'Tools', 6, 0, 1),
-(100, 0, 'M', '仪表盘', '/dashboard', NULL, NULL, NULL, 'Odometer', 0, 0, 1),
--- 二级菜单/按钮 - 系统管理
-(101, 1, 'C', '系统管理', '/system/index', 'system/index', 'sys:system:view', '/api/dept', '', 1, 0, 1),
+-- 一级菜单（去掉系统管理目录）
+(2, 0, 'C', '用户管理', '/system/user', 'system/user/index', 'sys:user:list', '/api/user/page', 'User', 2, 0, 1),
+(3, 0, 'C', '角色管理', '/system/role', 'system/role/index', 'sys:role:list', '/api/role/page', 'Wallet', 3, 0, 1),
+(4, 0, 'C', '菜单管理', '/system/menu', 'system/menu/index', 'sys:menu:list', '/api/menu/tree', 'Menu', 4, 0, 1),
+(5, 0, 'C', '单位管理', '/system/dept', 'system/dept/index', 'sys:dept:list', '/api/dept/tree', 'OfficeBuilding', 5, 0, 1),
+(6, 0, 'C', '参数管理', '/system/config', 'system/config/index', 'sys:config:list', '/api/config/page', 'Tools', 6, 0, 1),
+(100, 0, 'C', '仪表盘', '/dashboard', 'dashboard/index', 'sys:dashboard:view', '/api/dashboard/statistics', 'Odometer', 0, 0, 1),
 -- 用户管理按钮
-(201, 2, 'C', '用户列表', '/system/user/index', 'system/user/index', 'sys:user:list', '/api/user/page', '', 1, 0, 1),
 (202, 2, 'F', '新增用户', NULL, NULL, 'sys:user:add', NULL, '', 1, 0, 1),
 (203, 2, 'F', '编辑用户', NULL, NULL, 'sys:user:edit', NULL, '', 2, 0, 1),
 (204, 2, 'F', '删除用户', NULL, NULL, 'sys:user:delete', NULL, '', 3, 0, 1),
@@ -167,23 +163,19 @@ INSERT INTO sys_menu (menu_id, parent_id, menu_type, name, path, component, perm
 (206, 2, 'F', '分配单位', NULL, NULL, 'sys:user:assignDept', NULL, '', 5, 0, 1),
 (207, 2, 'F', '重置密码', NULL, NULL, 'sys:user:resetPwd', NULL, '', 6, 0, 1),
 -- 角色管理按钮
-(301, 3, 'C', '角色列表', '/system/role/index', 'system/role/index', 'sys:role:list', '/api/role/page', '', 1, 0, 1),
 (302, 3, 'F', '新增角色', NULL, NULL, 'sys:role:add', NULL, '', 1, 0, 1),
 (303, 3, 'F', '编辑角色', NULL, NULL, 'sys:role:edit', NULL, '', 2, 0, 1),
 (304, 3, 'F', '删除角色', NULL, NULL, 'sys:role:delete', NULL, '', 3, 0, 1),
 (305, 3, 'F', '分配菜单', NULL, NULL, 'sys:role:assignMenu', NULL, '', 4, 0, 1),
 -- 菜单管理按钮
-(401, 4, 'C', '菜单列表', '/system/menu/index', 'system/menu/index', 'sys:menu:list', '/api/menu/tree', '', 1, 0, 1),
 (402, 4, 'F', '新增菜单', NULL, NULL, 'sys:menu:add', NULL, '', 1, 0, 1),
 (403, 4, 'F', '编辑菜单', NULL, NULL, 'sys:menu:edit', NULL, '', 2, 0, 1),
 (404, 4, 'F', '删除菜单', NULL, NULL, 'sys:menu:delete', NULL, '', 3, 0, 1),
 -- 单位管理按钮
-(501, 5, 'C', '单位列表', '/system/dept/index', 'system/dept/index', 'sys:dept:list', '/api/dept/tree', '', 1, 0, 1),
 (502, 5, 'F', '新增单位', NULL, NULL, 'sys:dept:add', NULL, '', 1, 0, 1),
 (503, 5, 'F', '编辑单位', NULL, NULL, 'sys:dept:edit', NULL, '', 2, 0, 1),
 (504, 5, 'F', '删除单位', NULL, NULL, 'sys:dept:delete', NULL, '', 3, 0, 1),
 -- 参数管理按钮
-(601, 6, 'C', '参数列表', '/system/config/index', 'system/config/index', 'sys:config:list', '/api/config/page', '', 1, 0, 1),
 (602, 6, 'F', '新增参数', NULL, NULL, 'sys:config:add', NULL, '', 1, 0, 1),
 (603, 6, 'F', '编辑参数', NULL, NULL, 'sys:config:edit', NULL, '', 2, 0, 1),
 (604, 6, 'F', '删除参数', NULL, NULL, 'sys:config:delete', NULL, '', 3, 0, 1);
@@ -222,7 +214,7 @@ SELECT 1, menu_id FROM sys_menu;
 
 -- 系统管理员拥有部分菜单权限
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES
-                                                 (2, 100), (2, 1), (2, 101), (2, 2), (2, 201), (2, 202), (2, 203), (2, 204), (2, 3), (2, 301), (2, 302), (2, 303), (2, 6), (2, 601);
+                                                 (2, 100), (2, 2), (2, 202), (2, 3), (2, 302), (2, 6), (2, 602);
 
 -- 普通用户只有基础权限
 INSERT INTO sys_role_menu (role_id, menu_id) VALUES
