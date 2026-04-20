@@ -2,8 +2,8 @@
   <div class="login-container">
     <div class="login-box">
       <div class="login-header">
-        <h1>企业级权限管理平台</h1>
-        <p>Enterprise Permission Management System</p>
+        <h1>{{ systemName }}</h1>
+        <p>{{ systemSubtitle }}</p>
       </div>
       
       <el-form ref="loginFormRef" :model="loginForm" :rules="rules" class="login-form">
@@ -28,7 +28,7 @@
           />
         </el-form-item>
         
-        <el-form-item prop="captchaCode">
+        <el-form-item v-if="captchaEnabled" prop="captchaCode">
           <el-input 
             v-model="loginForm.captchaCode" 
             placeholder="验证码"
@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import { authApi, menuApi } from '../../api';
@@ -77,6 +77,15 @@ const loginFormRef = ref();
 const loading = ref(false);
 const captchaKey = ref('');
 const captchaImage = ref('');
+const captchaEnabled = ref(true);
+
+// 系统配置
+const systemName = computed(() => userStore.getConfig('sys.system.name', '安阳智能监督平台'));
+const systemSubtitle = computed(() => {
+  const name = systemName.value;
+  if (name.includes('安阳')) return 'Anyang Intelligent Supervision Platform';
+  return 'Enterprise Permission Management System';
+});
 
 const loginForm = reactive({
   username: '',
@@ -85,28 +94,35 @@ const loginForm = reactive({
   captchaKey: ''
 });
 
-const rules = {
+const rules = computed(() => ({
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-  captchaCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
-};
+  captchaCode: captchaEnabled.value 
+    ? [{ required: true, message: '请输入验证码', trigger: 'blur' }] 
+    : []
+}));
 
 // 获取验证码
 const getCaptcha = async () => {
   try {
     const res = await authApi.getCaptcha();
-    captchaKey.value = res.data.captchaKey;
-    loginForm.captchaKey = res.data.captchaKey;
-    // 验证码是base64图片
-    captchaImage.value = res.data.captchaImage;
+    captchaEnabled.value = res.data.captchaEnabled !== false;
+    if (captchaEnabled.value) {
+      captchaKey.value = res.data.captchaKey;
+      loginForm.captchaKey = res.data.captchaKey;
+      captchaImage.value = res.data.captchaImage;
+    }
   } catch (error) {
     console.error('获取验证码失败', error);
+    captchaEnabled.value = false;
   }
 };
 
 // 刷新验证码
 const refreshCaptcha = () => {
-  getCaptcha();
+  if (captchaEnabled.value) {
+    getCaptcha();
+  }
 };
 
 // 登录
@@ -121,6 +137,7 @@ const handleLogin = async () => {
     
     userStore.setToken(res.data.token);
     userStore.setUserInfo(res.data.userInfo);
+    userStore.setSystemConfig(res.data.systemConfig || {});
     
     // 获取用户信息和权限
     const infoRes = await authApi.getUserInfo();
@@ -134,7 +151,9 @@ const handleLogin = async () => {
     router.push('/');
   } catch (error: any) {
     ElMessage.error(error.message || '登录失败');
-    refreshCaptcha();
+    if (captchaEnabled.value) {
+      refreshCaptcha();
+    }
   } finally {
     loading.value = false;
   }

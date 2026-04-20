@@ -6,6 +6,7 @@ import com.permission.common.R;
 import com.permission.config.JwtUtils;
 import com.permission.entity.User;
 import com.permission.service.MenuService;
+import com.permission.service.SysConfigService;
 import com.permission.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,28 +43,40 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private SysConfigService sysConfigService;
+
     @Value("${captcha.expiration}")
     private long captcha_expiration;
+
     /**
      * 获取验证码
      */
     @GetMapping("/captcha")
     public R getCaptcha() {
+        // 检查是否启用验证码
+        boolean captchaEnabled = sysConfigService.getBooleanValue("sys.login.captcha", true);
+        if (!captchaEnabled) {
+            return R.success(Map.of("captchaEnabled", false));
+        }
+
         // 生成图形验证码
         LineCaptcha captcha = CaptchaUtil.createLineCaptcha(120, 40, 4, 50);
         String code = captcha.getCode();
         String key = UUID.randomUUID().toString();
 
-        // 存储验证码到Redis（5分钟过期）
+        // 存储验证码到Redis
         redisTemplate.opsForValue().set("captcha:" + key, code, captcha_expiration, TimeUnit.MILLISECONDS);
 
-        Map<String, String> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
+        result.put("captchaEnabled", true);
         result.put("captchaKey", key);
         // 返回base64编码的图片
         result.put("captchaImage", "data:image/png;base64," + captcha.getImageBase64());
 
         return R.success(result);
     }
+
     /**
      * 登录
      */
@@ -78,8 +91,11 @@ public class AuthController {
             return R.error(400, "用户名和密码不能为空");
         }
 
-        // 验证验证码（如果提供了验证码）
-        if (captchaKey != null && captchaCode != null && !captchaKey.isEmpty()) {
+        // 检查是否启用验证码
+        boolean captchaEnabled = sysConfigService.getBooleanValue("sys.login.captcha", true);
+
+        // 验证验证码（如果提供了验证码且启用了验证码）
+        if (captchaEnabled && captchaKey != null && captchaCode != null && !captchaKey.isEmpty()) {
             String cachedCode = redisTemplate.opsForValue().get("captcha:" + captchaKey);
             if (cachedCode == null) {
                 return R.error(400, "验证码已过期");
@@ -113,11 +129,17 @@ public class AuthController {
         // 获取管辖单位列表
         List<Long> deptIds = userService.getUserDetails(user.getUserId()).getDeptIds();
 
+        // 获取Token有效期（小时）
+        int tokenExpireHours = sysConfigService.getIntValue("sys.token.expire", 24);
+
         // 生成Token
         String token = jwtUtils.generateToken(user.getUserId(), user.getUsername(), isSuperAdmin);
 
         // 将Token存入Redis
-        redisTemplate.opsForValue().set("token:" + user.getUserId(), token, 24, java.util.concurrent.TimeUnit.HOURS);
+        redisTemplate.opsForValue().set("token:" + user.getUserId(), token, tokenExpireHours, TimeUnit.HOURS);
+
+        // 返回系统配置信息
+        Map<String, String> systemConfig = sysConfigService.getAllConfig();
 
         Map<String, Object> result = new HashMap<>();
         result.put("token", token);
@@ -130,6 +152,7 @@ public class AuthController {
                 "deptName", user.getDeptName() != null ? user.getDeptName() : ""
         ));
         result.put("deptIds", deptIds != null ? deptIds : List.of());
+        result.put("systemConfig", systemConfig);
 
         return R.success(result);
     }

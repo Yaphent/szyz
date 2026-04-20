@@ -10,7 +10,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,6 +23,7 @@ public class SysConfigServiceImpl implements SysConfigService {
     
     private static final String CACHE_KEY_PREFIX = "sys:config:";
     private static final long CACHE_EXPIRE_HOURS = 24;
+    private static final String ALL_CONFIG_CACHE_KEY = "sys:config:all";
     
     @Autowired
     private SysConfigMapper sysConfigMapper;
@@ -45,6 +48,78 @@ public class SysConfigServiceImpl implements SysConfigService {
         
         wrapper.orderByDesc(SysConfig::getCreateTime);
         return sysConfigMapper.selectPage(pageInfo, wrapper);
+    }
+    
+    @Override
+    public String getValue(String configKey) {
+        // 先从缓存获取
+        String cacheKey = CACHE_KEY_PREFIX + configKey;
+        String cachedValue = redisTemplate.opsForValue().get(cacheKey);
+        if (cachedValue != null) {
+            return cachedValue;
+        }
+        
+        // 从数据库查询
+        String value = sysConfigMapper.selectValueByKey(configKey);
+        if (value != null) {
+            // 写入缓存
+            redisTemplate.opsForValue().set(cacheKey, value, CACHE_EXPIRE_HOURS, TimeUnit.HOURS);
+        }
+        return value;
+    }
+    
+    @Override
+    public boolean getBooleanValue(String configKey, boolean defaultValue) {
+        String value = getValue(configKey);
+        if (value == null) {
+            return defaultValue;
+        }
+        return "true".equalsIgnoreCase(value) || "1".equals(value);
+    }
+    
+    @Override
+    public int getIntValue(String configKey, int defaultValue) {
+        String value = getValue(configKey);
+        if (value == null) {
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+    
+    @Override
+    public Map<String, String> getAllConfig() {
+        // 先从缓存获取
+        @SuppressWarnings("unchecked")
+        Map<String, String> cachedConfig = (Map<String, String>) redisTemplate.opsForValue().get(ALL_CONFIG_CACHE_KEY);
+        if (cachedConfig != null) {
+            return cachedConfig;
+        }
+        
+        // 从数据库查询
+        List<SysConfig> configs = sysConfigMapper.selectList(null);
+        Map<String, String> configMap = new HashMap<>();
+        for (SysConfig config : configs) {
+            configMap.put(config.getConfigKey(), config.getConfigValue());
+        }
+        
+        // 写入缓存
+        redisTemplate.opsForValue().set(ALL_CONFIG_CACHE_KEY, configMap, CACHE_EXPIRE_HOURS, TimeUnit.HOURS);
+        
+        return configMap;
+    }
+    
+    @Override
+    public void refreshCache() {
+        // 清除所有配置缓存
+        List<SysConfig> configs = sysConfigMapper.selectList(null);
+        for (SysConfig config : configs) {
+            redisTemplate.delete(CACHE_KEY_PREFIX + config.getConfigKey());
+        }
+        redisTemplate.delete(ALL_CONFIG_CACHE_KEY);
     }
     
     @Override

@@ -252,7 +252,7 @@ CREATE INDEX idx_config_status ON sys_config(status);
 -- 9. 初始化系统参数数据
 -- ----------------------------------------
 INSERT INTO sys_config (config_name, config_key, config_value, config_type, remark, status) VALUES
-('系统名称', 'sys.system.name', '企业权限管理平台', 'S', '系统显示名称', 1),
+('系统名称', 'sys.system.name', '安阳智能监督平台', 'S', '系统显示名称', 1),
 ('系统Logo', 'sys.logo.url', '/logo.png', 'S', '系统Logo图片URL', 1),
 ('登录验证码', 'sys.login.captcha', 'true', 'B', '是否启用登录验证码', 1),
 ('单点登录', 'sys.login.sso', 'false', 'B', '是否启用单点登录', 1),
@@ -260,4 +260,4 @@ INSERT INTO sys_config (config_name, config_key, config_value, config_type, rema
 ('密码最小长度', 'sys.password.minLength', '6', 'N', '用户密码最小长度', 1),
 ('文件上传大小', 'sys.upload.maxSize', '10', 'N', '单文件上传大小限制(MB)', 1),
 ('允许文件类型', 'sys.upload.allowedTypes', 'jpg,jpeg,png,pdf,doc,docx,xls,xlsx', 'S', '允许上传的文件类型', 1),
-('系统公告', 'sys.announcement', '欢迎使用企业权限管理平台！', 'S', '系统公告内容', 1);
+('系统公告', 'sys.announcement', '欢迎使用安阳智能监督平台！', 'S', '系统公告内容', 1);

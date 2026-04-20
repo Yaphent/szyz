@@ -1,50 +1,35 @@
 package com.permission.service;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.permission.entity.SysConfig;
+import java.util.List;
+import java.util.Map;
 
 /**
- * 系统参数服务接口
+ * 系统配置服务接口
  */
 public interface SysConfigService {
     
     /**
-     * 分页查询
+     * 根据键名获取值
      */
-    Page<SysConfig> getPage(int page, int pageSize, String configName, String configKey, String configType);
+    String getValue(String configKey);
     
     /**
-     * 获取全部参数
+     * 根据键名获取布尔值
      */
-    java.util.List<SysConfig> getAll();
+    boolean getBooleanValue(String configKey, boolean defaultValue);
     
     /**
-     * 根据ID查询
+     * 根据键名获取整数值
      */
-    SysConfig getById(Long configId);
+    int getIntValue(String configKey, int defaultValue);
     
     /**
-     * 根据键名查询值
+     * 获取所有配置
      */
-    String getValueByKey(String configKey);
+    Map<String, String> getAllConfig();
     
     /**
-     * 新增参数
-     */
-    boolean save(SysConfig config);
-    
-    /**
-     * 修改参数
-     */
-    boolean update(SysConfig config);
-    
-    /**
-     * 删除参数
-     */
-    boolean delete(Long configId);
-    
-    /**
-     * 刷新缓存
+     * 刷新配置缓存
      */
     void refreshCache();
 }

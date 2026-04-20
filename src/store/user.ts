@@ -28,6 +28,7 @@ export const useUserStore = defineStore('user', () => {
   const userInfo = ref<UserInfo | null>(JSON.parse(localStorage.getItem('userInfo') || 'null'));
   const perms = ref<string[]>([]);
   const menus = ref<MenuItem[]>([]);
+  const systemConfig = ref<Record<string, string>>(JSON.parse(localStorage.getItem('systemConfig') || '{}'));
 
   function setToken(newToken: string) {
     token.value = newToken;
@@ -48,6 +49,16 @@ export const useUserStore = defineStore('user', () => {
     localStorage.setItem('menus', JSON.stringify(newMenus));
   }
 
+  function setSystemConfig(config: Record<string, string>) {
+    systemConfig.value = config;
+    localStorage.setItem('systemConfig', JSON.stringify(config));
+  }
+
+  // 获取系统配置值
+  function getConfig(key: string, defaultValue: string = ''): string {
+    return systemConfig.value[key] || defaultValue;
+  }
+
   function hasPerm(perm: string | string[]): boolean {
     if (Array.isArray(perm)) {
       return perm.some(p => perms.value.includes(p));
@@ -60,9 +71,11 @@ export const useUserStore = defineStore('user', () => {
     userInfo.value = null;
     perms.value = [];
     menus.value = [];
+    systemConfig.value = {};
     localStorage.removeItem('token');
     localStorage.removeItem('userInfo');
     localStorage.removeItem('menus');
+    localStorage.removeItem('systemConfig');
   }
 
   return {
@@ -70,10 +83,13 @@ export const useUserStore = defineStore('user', () => {
     userInfo,
     perms,
     menus,
+    systemConfig,
     setToken,
     setUserInfo,
     setPerms,
     setMenus,
+    setSystemConfig,
+    getConfig,
     hasPerm,
     logout
   };

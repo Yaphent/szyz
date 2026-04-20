@@ -4,7 +4,7 @@
     <el-aside :width="isCollapse ? '64px' : '220px'" class="aside">
       <div class="logo">
         <el-icon :size="28" color="#409eff"><ElementPlus /></el-icon>
-        <span v-if="!isCollapse">权限管理平台</span>
+        <span v-if="!isCollapse">{{ systemName }}</span>
       </div>
       
       <el-menu
@@ -99,6 +99,7 @@ const userStore = useUserStore();
 
 const isCollapse = ref(false);
 const activeMenu = computed(() => route.path);
+const systemName = computed(() => userStore.getConfig('sys.system.name', '安阳智能监督平台'));
 
 // 图标映射
 const iconMap: Record<string, any> = {
