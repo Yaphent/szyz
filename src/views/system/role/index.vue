@@ -4,26 +4,24 @@
       <template #header>
         <div class="card-header">
           <span>角色管理</span>
+          <el-form :inline="true" :model="queryForm" class="header-form">
+            <el-form-item label="角色名称">
+              <el-input v-model="queryForm.roleName" placeholder="请输入角色名称" clearable style="width: 150px" />
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-select v-model="queryForm.status" placeholder="请选择" clearable style="width: 120px">
+                <el-option label="启用" :value="1" />
+                <el-option label="禁用" :value="0" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="handleSearch">查询</el-button>
+              <el-button @click="handleReset">重置</el-button>
+            </el-form-item>
+          </el-form>
           <el-button type="primary" :icon="Plus" @click="handleAdd">新增角色</el-button>
         </div>
       </template>
-      
-      <!-- 搜索表单 -->
-      <el-form :inline="true" :model="queryForm" class="search-form">
-        <el-form-item label="角色名称">
-          <el-input v-model="queryForm.roleName" placeholder="请输入角色名称" clearable />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="queryForm.status" placeholder="请选择" clearable>
-            <el-option label="启用" :value="1" />
-            <el-option label="禁用" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
-          <el-button @click="handleReset">重置</el-button>
-        </el-form-item>
-      </el-form>
       
       <!-- 角色列表 -->
       <el-table :data="tableData" v-loading="loading" border stripe>
@@ -266,11 +264,22 @@ onMounted(() => {
 
 .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.search-form {
-  margin-bottom: 20px;
+.card-header > span {
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.header-form {
+  margin: 0;
+  flex: 1;
+}
+
+.header-form :deep(.el-form-item) {
+  margin-bottom: 0;
 }
 </style>
