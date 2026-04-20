@@ -261,11 +261,25 @@ onMounted(() => {
   height: 100%;
 }
 
+.role-manage :deep(.el-card) {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.role-manage :deep(.el-card__body) {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
 .card-header {
   display: flex;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .card-header > span {
@@ -280,5 +294,14 @@ onMounted(() => {
 
 .header-form :deep(.el-form-item) {
   margin-bottom: 0;
+}
+
+.role-manage :deep(.el-table) {
+  flex: 1;
+}
+
+.role-manage :deep(.el-pagination) {
+  flex-shrink: 0;
+  margin-top: 16px;
 }
 </style>
