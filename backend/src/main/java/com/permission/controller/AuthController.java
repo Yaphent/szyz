@@ -109,6 +109,9 @@ public class AuthController {
 
         // 检查是否为超级管理员
         boolean isSuperAdmin = userService.isSuperAdmin(user.getUserId());
+        
+        // 获取管辖单位列表
+        List<Long> deptIds = userService.getUserDetails(user.getUserId()).getDeptIds();
 
         // 生成Token
         String token = jwtUtils.generateToken(user.getUserId(), user.getUsername(), isSuperAdmin);
@@ -126,6 +129,7 @@ public class AuthController {
                 "deptId", user.getDeptId() != null ? user.getDeptId() : 0,
                 "deptName", user.getDeptName() != null ? user.getDeptName() : ""
         ));
+        result.put("deptIds", deptIds != null ? deptIds : List.of());
 
         return R.success(result);
     }
