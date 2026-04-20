@@ -8,7 +8,8 @@
       </template>
       
       <!-- 菜单树 -->
-      <el-table :data="tableData" v-loading="loading" border stripe row-key="menuId" default-expand-all>
+      <el-table :data="tableData" v-loading="loading" border stripe row-key="menuId">
+        <el-table-column type="index" label="序号" width="60" align="center" />
         <el-table-column prop="name" label="菜单名称" width="200" />
         <el-table-column prop="icon" label="图标" width="100">
           <template #default="{ row }">
