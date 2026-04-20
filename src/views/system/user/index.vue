@@ -59,7 +59,11 @@
             <el-table-column prop="userId" label="用户ID" width="80" />
             <el-table-column prop="username" label="用户名" width="120" />
             <el-table-column prop="nickname" label="昵称" width="120" />
-            <el-table-column prop="deptName" label="所属单位" width="150" />
+            <el-table-column prop="deptName" label="所属单位" width="180">
+              <template #default="{ row }">
+                {{ row.deptCode ? '[' + row.deptCode + '] ' : '' }}{{ row.deptName || '-' }}
+              </template>
+            </el-table-column>
             <el-table-column prop="mobile" label="手机号" width="130" />
             <el-table-column prop="email" label="邮箱" min-width="180" />
             <el-table-column prop="status" label="状态" width="80">
