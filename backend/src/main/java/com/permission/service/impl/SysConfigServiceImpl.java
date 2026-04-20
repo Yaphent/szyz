@@ -117,8 +117,9 @@ public class SysConfigServiceImpl implements SysConfigService {
         // 清除所有配置缓存
         List<SysConfig> configs = sysConfigMapper.selectList(null);
         for (SysConfig config : configs) {
-            redisTemplate.delete(CACHE_KEY_PREFIX + config.getConfigKey());
+            clearCache(config.getConfigKey());
         }
+        // 清除所有配置的缓存
         redisTemplate.delete(ALL_CONFIG_CACHE_KEY);
     }
     
@@ -134,20 +135,7 @@ public class SysConfigServiceImpl implements SysConfigService {
     
     @Override
     public String getValueByKey(String configKey) {
-        // 先从缓存获取
-        String cacheKey = CACHE_KEY_PREFIX + configKey;
-        String cachedValue = redisTemplate.opsForValue().get(cacheKey);
-        if (cachedValue != null) {
-            return cachedValue;
-        }
-        
-        // 从数据库查询
-        String value = sysConfigMapper.selectValueByKey(configKey);
-        if (value != null) {
-            // 写入缓存
-            redisTemplate.opsForValue().set(cacheKey, value, CACHE_EXPIRE_HOURS, TimeUnit.HOURS);
-        }
-        return value;
+        return getValue(configKey);
     }
     
     @Override
@@ -167,9 +155,9 @@ public class SysConfigServiceImpl implements SysConfigService {
         if (existing != null && !existing.getConfigId().equals(config.getConfigId())) {
             throw new RuntimeException("参数键名已存在");
         }
-        
         // 清除缓存
         clearCache(config.getConfigKey());
+        redisTemplate.delete(ALL_CONFIG_CACHE_KEY);
         return sysConfigMapper.updateById(config) > 0;
     }
     
@@ -178,17 +166,9 @@ public class SysConfigServiceImpl implements SysConfigService {
         SysConfig config = sysConfigMapper.selectById(configId);
         if (config != null) {
             clearCache(config.getConfigKey());
+            redisTemplate.delete(ALL_CONFIG_CACHE_KEY);
         }
         return sysConfigMapper.deleteById(configId) > 0;
-    }
-    
-    @Override
-    public void refreshCache() {
-        // 清除所有参数缓存
-        List<SysConfig> configs = sysConfigMapper.selectList(null);
-        for (SysConfig config : configs) {
-            clearCache(config.getConfigKey());
-        }
     }
     
     /**
