@@ -11,7 +11,7 @@
           <el-tree
             ref="deptTreeRef"
             :data="deptTree"
-            :props="{ label: 'name', children: 'children' }"
+            :props="{ label: 'deptName', children: 'children' }"
             node-key="deptId"
             default-expand-all
             highlight-current
@@ -20,7 +20,7 @@
           >
             <template #default="{ node, data }">
               <span class="dept-node">
-                <span>[{{ data.deptCode }}] {{ data.name }}</span>
+                <span>[{{ data.deptCode }}] {{ data.deptName }}</span>
                 <span class="dept-count">({{ data.userCount || 0 }})</span>
               </span>
             </template>
