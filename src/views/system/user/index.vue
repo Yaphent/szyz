@@ -115,6 +115,7 @@
             placeholder="请选择所属单位"
             check-strictly
             :render-after-expand="false"
+            :render-content="renderDeptContent"
           />
         </el-form-item>
         <el-form-item label="手机号" prop="mobile">
@@ -153,12 +154,16 @@
           <el-tree
             ref="assignDeptTreeRef"
             :data="deptTree"
-            :props="{ label: 'name', children: 'children' }"
+            :props="{ label: 'deptName', children: 'children' }"
             node-key="deptId"
             show-checkbox
             :default-expand-all="true"
             empty-text="加载中..."
-          />
+          >
+            <template #default="{ data }">
+              <span>[{{ data.deptCode }}] {{ data.deptName }}</span>
+            </template>
+          </el-tree>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -170,11 +175,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, nextTick } from 'vue';
+import { ref, reactive, onMounted, nextTick, h } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { Plus, Refresh } from '@element-plus/icons-vue';
 import { userApi, roleApi, deptApi } from '../../../api';
 import type { ElTree } from 'element-plus';
+
+// 自定义渲染单位选项：[编码] 单位名称
+const renderDeptContent = (h: any, { data }: { data: any }) => {
+  return h('span', `[${data.deptCode || ''}] ${data.deptName || ''}`);
+};
 
 const loading = ref(false);
 const tableData = ref<any[]>([]);
