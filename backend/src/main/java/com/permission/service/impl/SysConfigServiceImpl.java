@@ -1,5 +1,6 @@
 package com.permission.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.permission.entity.SysConfig;
@@ -92,11 +93,10 @@ public class SysConfigServiceImpl implements SysConfigService {
     
     @Override
     public Map<String, String> getAllConfig() {
-        // 先从缓存获取
-        @SuppressWarnings("unchecked")
-        Map<String, String> cachedConfig = (Map<String, String>) redisTemplate.opsForValue().get(ALL_CONFIG_CACHE_KEY);
-        if (cachedConfig != null) {
-            return cachedConfig;
+        // 先从缓存获取（JSON字符串）
+        String cachedJson = redisTemplate.opsForValue().get(ALL_CONFIG_CACHE_KEY);
+        if (cachedJson != null) {
+            return JSON.parseObject(cachedJson, Map.class);
         }
         
         // 从数据库查询
@@ -106,8 +106,8 @@ public class SysConfigServiceImpl implements SysConfigService {
             configMap.put(config.getConfigKey(), config.getConfigValue());
         }
         
-        // 写入缓存
-        redisTemplate.opsForValue().set(ALL_CONFIG_CACHE_KEY, configMap, CACHE_EXPIRE_HOURS, TimeUnit.HOURS);
+        // 写入缓存（JSON字符串）
+        redisTemplate.opsForValue().set(ALL_CONFIG_CACHE_KEY, JSON.toJSONString(configMap), CACHE_EXPIRE_HOURS, TimeUnit.HOURS);
         
         return configMap;
     }
