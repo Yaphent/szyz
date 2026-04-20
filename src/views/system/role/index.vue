@@ -3,7 +3,6 @@
     <el-card>
       <template #header>
         <div class="card-header">
-          <span>角色管理</span>
           <el-form :inline="true" :model="queryForm" class="header-form">
             <el-form-item label="角色名称">
               <el-input v-model="queryForm.roleName" placeholder="请输入角色名称" clearable style="width: 150px" />
