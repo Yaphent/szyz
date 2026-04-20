@@ -20,7 +20,7 @@
           >
             <template #default="{ node, data }">
               <span class="dept-node">
-                <span>{{ data.name }}</span>
+                <span>[{{ data.deptCode }}] {{ data.name }}</span>
                 <span class="dept-count">({{ data.userCount || 0 }})</span>
               </span>
             </template>
