@@ -43,12 +43,12 @@
                   <el-option label="禁用" :value="0" />
                 </el-select>
               </el-form-item>
-              <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
-                <el-button @click="handleReset">重置</el-button>
-              </el-form-item>
             </el-form>
-            <el-button type="primary" :icon="Plus" @click="handleAdd">新增用户</el-button>
+            <div class="header-buttons">
+              <el-button type="primary" @click="handleSearch">查询</el-button>
+              <el-button @click="handleReset">重置</el-button>
+              <el-button type="primary" :icon="Plus" @click="handleAdd">新增用户</el-button>
+            </div>
           </div>
           
           <!-- 用户列表 -->
