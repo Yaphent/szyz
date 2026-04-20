@@ -44,11 +44,11 @@
                 </el-select>
               </el-form-item>
             </el-form>
-            <div class="header-buttons">
-              <el-button type="primary" @click="handleSearch">查询</el-button>
-              <el-button @click="handleReset">重置</el-button>
-              <el-button type="primary" :icon="Plus" @click="handleAdd">新增用户</el-button>
-            </div>
+          </div>
+          <div class="card-toolbar">
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+            <el-button @click="handleReset">重置</el-button>
+            <el-button type="primary" :icon="Plus" @click="handleAdd">新增用户</el-button>
           </div>
           
           <!-- 用户列表 -->
@@ -453,6 +453,12 @@ onMounted(() => {
 
 .header-form :deep(.el-form-item) {
   margin-bottom: 0;
+}
+
+.card-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .user-main :deep(.el-table) {

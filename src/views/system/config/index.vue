@@ -18,12 +18,12 @@
               </el-select>
             </el-form-item>
           </el-form>
-          <div class="header-buttons">
-            <el-button type="primary" @click="loadData">查询</el-button>
-            <el-button @click="handleReset">重置</el-button>
-            <el-button type="primary" :icon="Plus" @click="handleAdd">新增参数</el-button>
-            <el-button :icon="Refresh" @click="handleRefreshCache">刷新缓存</el-button>
-          </div>
+        </div>
+        <div class="card-toolbar">
+          <el-button type="primary" @click="loadData">查询</el-button>
+          <el-button @click="handleReset">重置</el-button>
+          <el-button type="primary" :icon="Plus" @click="handleAdd">新增参数</el-button>
+          <el-button :icon="Refresh" @click="handleRefreshCache">刷新缓存</el-button>
         </div>
       </template>
       
@@ -338,6 +338,12 @@ onMounted(() => {
 .header-buttons {
   display: flex;
   gap: 8px;
+}
+
+.card-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .config-manage :deep(.el-table) {
