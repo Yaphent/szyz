@@ -111,7 +111,7 @@
           <el-tree-select
             v-model="form.deptId"
             :data="deptTree"
-            :props="{ label: 'name', value: 'deptId', children: 'children' }"
+            :props="{ label: 'deptName', value: 'deptId', children: 'children' }"
             placeholder="请选择所属单位"
             check-strictly
             :render-after-expand="false"
