@@ -159,7 +159,7 @@
             show-checkbox
             :default-expand-all="true"
             empty-text="加载中..."
-            style="min-height: 200px; max-height: 350px; overflow-y: auto; border: 1px solid #dcdfe6; border-radius: 4px; padding: 8px;"
+            style="min-height: 200px; max-height: 350px; width: 100%; overflow-y: auto; border: 1px solid #dcdfe6; border-radius: 4px; padding: 8px; box-sizing: border-box;"
           >
             <template #default="{ data }">
               <span>[{{ data.deptCode }}] {{ data.deptName }}</span>
