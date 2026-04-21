@@ -157,24 +157,30 @@ const ensureProtocol = (url: string): string => {
 
 // 处理菜单点击事件
 const handleMenuClick = (menu: any, event: Event) => {
-  // 如果是外链
+  console.log('[菜单点击]', menu.menuType, menu.name, menu.path, menu.isFrame);
+  
+  // 只有当 menuType 为 'L' 时才处理为外链
   if (menu.menuType === 'L') {
-    // 阻止 Vue Router 导航
-    event.preventDefault();
+    console.log('[外链处理] 开始处理外链');
+    // 阻止默认行为
+    event.stopPropagation();
     
     const fullUrl = ensureProtocol(menu.path);
+    console.log('[外链处理] 完整URL:', fullUrl);
     
+    // isFrame = 1 为嵌入式，isFrame = 0 为新标签页
     if (menu.isFrame === 1 || menu.isFrame === '1') {
       // 嵌入式打开
+      console.log('[外链处理] 嵌入式打开');
       iframeLoading.value = true;
       iframeUrl.value = '';
       iframeTitle.value = menu.name;
-      // 使用 nextTick 确保 DOM 更新后再设置 URL
       setTimeout(() => {
         iframeUrl.value = fullUrl;
       }, 100);
     } else {
-      // 新标签页打开 - 直接使用 a 标签
+      // 新标签页打开（isFrame 为 0、'0' 或其他值）
+      console.log('[外链处理] 新标签页打开');
       const link = document.createElement('a');
       link.href = fullUrl;
       link.target = '_blank';
