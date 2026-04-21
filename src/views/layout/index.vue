@@ -33,7 +33,11 @@
           </el-sub-menu>
           
           <!-- 没有子菜单的菜单项 -->
-          <el-menu-item v-else :index="menu.path">
+          <el-menu-item 
+            v-else 
+            :index="menu.path" 
+            @click="handleMenuClick(menu)"
+          >
             <el-icon><component :is="getIcon(menu.icon)" /></el-icon>
             <template #title>{{ menu.name }}</template>
           </el-menu-item>
@@ -116,14 +120,20 @@ const getIcon = (iconName?: string) => {
   return iconMap[iconName || ''] || Menu;
 };
 
+// 处理菜单点击事件
+const handleMenuClick = (menu: any) => {
+  // 如果是外链（isFrame = 1），在新窗口打开
+  if (menu.isFrame === 1 || menu.isFrame === '1') {
+    window.open(menu.path, '_blank');
+  }
+};
+
 // 用户菜单
 const userMenus = computed(() => {
-  // 过滤出菜单类型的菜单（不包括按钮和外链）
+  // 过滤出菜单类型的菜单（只排除按钮）
   return userStore.menus.filter(menu => {
     // 排除按钮类型（F）
     if (menu.menuType === 'F') return false;
-    // 排除外链（isFrame = 1）
-    if (menu.isFrame === 1 || menu.isFrame === '1') return false;
     return true;
   });
 });
@@ -134,8 +144,6 @@ const getVisibleChildren = (menu: any) => {
   return menu.children.filter((child: any) => {
     // 排除按钮类型（F）
     if (child.menuType === 'F') return false;
-    // 排除外链（isFrame = 1）
-    if (child.isFrame === 1 || child.isFrame === '1') return false;
     return true;
   });
 };
