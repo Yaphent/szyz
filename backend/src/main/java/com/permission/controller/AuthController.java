@@ -119,9 +119,9 @@ public class AuthController {
         }
 
         // 验证密码
-//        if (!passwordEncoder.matches(password, user.getPassword())) {
-//            return R.error(401, "用户名或密码错误");
-//        }
+        // if (!passwordEncoder.matches(password, user.getPassword())) {
+        //     return R.error(401, "用户名或密码错误");
+        // }
 
         // 检查是否为超级管理员
         boolean isSuperAdmin = userService.isSuperAdmin(user.getUserId());

@@ -79,7 +79,7 @@
         </div>
       </el-header>
       
-      // 主内容区 -->
+      <!--// 主内容区 -->
       <el-main class="main">
         <!-- 嵌入式外链 iframe -->
         <div v-if="iframeUrl" class="iframe-container">
@@ -107,7 +107,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { ElMessageBox } from 'element-plus';
 import { useUserStore } from '../../store/user';
@@ -164,8 +164,13 @@ const handleMenuClick = (menu: any, event: any) => {
     console.log('[外链处理] 开始处理外链');
     // 获取原生事件对象
     const nativeEvent = event.nativeEvent || event;
-    nativeEvent.stopPropagation();
-    nativeEvent.preventDefault();
+    // 阻止事件冒泡和默认行为，确保不会触发路由跳转
+    if (nativeEvent && typeof nativeEvent.stopPropagation === 'function') {
+      nativeEvent.stopPropagation();
+    }
+    if (nativeEvent && typeof nativeEvent.preventDefault === 'function') {
+      nativeEvent.preventDefault();
+    }
     
     const fullUrl = ensureProtocol(menu.path);
     console.log('[外链处理] 完整URL:', fullUrl);
@@ -241,6 +246,13 @@ const handleCommand = async (command: string) => {
     router.push('/login');
   }
 };
+
+// 监听路由变化，自动关闭iframe
+watch(() => route.path, (newPath) => {
+  console.log('[路由变化]', newPath);
+  // 当路由变化时，关闭iframe，显示对应的路由组件
+  closeIframe();
+});
 
 // 组件挂载时获取菜单
 onMounted(async () => {

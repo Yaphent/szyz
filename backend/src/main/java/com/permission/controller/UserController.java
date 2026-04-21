@@ -2,6 +2,7 @@ package com.permission.controller;
 
 import com.permission.common.PageResult;
 import com.permission.common.R;
+import com.permission.config.JwtUtils;
 import com.permission.entity.User;
 import com.permission.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用户控制器
@@ -24,6 +26,9 @@ public class UserController {
     
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtils jwtUtils;
     
     /**
      * 分页查询
@@ -147,9 +152,15 @@ public class UserController {
      * 修改密码
      */
     @PutMapping("/change-password")
-    public R changePassword(@RequestBody Map<String, String> params) {
-        // 从请求中获取用户ID（需要认证拦截器注入）
-        Long userId = 1L; // 需要从Token中获取
+    public R changePassword(@RequestBody Map<String, String> params, HttpServletRequest request) {
+        // 从请求头中获取Token并解析用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return R.error(401, "未登录");
+        }
+        String tokenStr = token.substring(7);
+        Long userId = jwtUtils.getUserId(tokenStr);
+        
         String oldPassword = params.get("oldPassword");
         String newPassword = params.get("newPassword");
         
@@ -176,10 +187,18 @@ public class UserController {
      * 上传头像
      */
     @PostMapping("/avatar")
-    public R<String> uploadAvatar(@RequestParam("avatar") MultipartFile file) {
+    public R<String> uploadAvatar(@RequestParam("avatar") MultipartFile file, HttpServletRequest request) {
         if (file.isEmpty()) {
             return R.error(400, "请选择图片文件");
         }
+        
+        // 从请求头中获取Token并解析用户ID
+        String token = request.getHeader("Authorization");
+        if (token == null || !token.startsWith("Bearer ")) {
+            return R.error(401, "未登录");
+        }
+        String tokenStr = token.substring(7);
+        Long userId = jwtUtils.getUserId(tokenStr);
         
         // 保存文件
         String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
@@ -194,7 +213,7 @@ public class UserController {
             String avatarUrl = "/uploads/avatar/" + filename;
             
             // 更新用户头像
-            userService.updateAvatar(1L, avatarUrl); // 需要从Token中获取用户ID
+            userService.updateAvatar(userId, avatarUrl);
             
             return R.success(avatarUrl, "头像上传成功");
         } catch (IOException e) {
