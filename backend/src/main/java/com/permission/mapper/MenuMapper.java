@@ -36,13 +36,13 @@ public interface MenuMapper extends BaseMapper<Menu> {
     @Select("SELECT DISTINCT m.* FROM sys_user_role ur " +
             "JOIN sys_role_menu rm ON ur.role_id = rm.role_id " +
             "JOIN sys_menu m ON rm.menu_id = m.menu_id " +
-            "WHERE ur.user_id = #{userId} AND m.status = 1 AND m.menu_type IN ('M', 'C') " +
+            "WHERE ur.user_id = #{userId} AND m.status = 1 AND m.menu_type IN ('M', 'C', 'L') " +
             "ORDER BY m.sort ASC")
     java.util.List<Menu> selectRoutesByUserId(@Param("userId") Long userId);
     
     /**
      * 获取所有菜单用于超级管理员
      */
-    @Select("SELECT * FROM sys_menu WHERE status = 1 AND menu_type IN ('M', 'C') ORDER BY sort ASC")
+    @Select("SELECT * FROM sys_menu WHERE status = 1 AND menu_type IN ('M', 'C', 'L') ORDER BY sort ASC")
     java.util.List<Menu> selectAllRoutes();
 }
