@@ -118,8 +118,14 @@ const getIcon = (iconName?: string) => {
 
 // 用户菜单
 const userMenus = computed(() => {
-  // 过滤出菜单类型的菜单（不包括按钮）
-  return userStore.menus.filter(menu => menu.menuType !== 'F');
+  // 过滤出菜单类型的菜单（不包括按钮和外链）
+  return userStore.menus.filter(menu => {
+    // 排除按钮类型（F）
+    if (menu.menuType === 'F') return false;
+    // 排除外链（isFrame = 1）
+    if (menu.isFrame === 1 || menu.isFrame === '1') return false;
+    return true;
+  });
 });
 
 const handleCommand = async (command: string) => {

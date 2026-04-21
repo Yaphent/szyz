@@ -9,6 +9,7 @@ interface MenuItem {
   component?: string;
   icon?: string;
   menuType: string;
+  isFrame?: number | string;
   children?: MenuItem[];
 }
 
