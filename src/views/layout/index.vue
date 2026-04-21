@@ -18,13 +18,13 @@
         <!-- 遍历用户菜单 -->
         <template v-for="menu in userMenus" :key="menu.menuId">
           <!-- 有子菜单的目录 -->
-          <el-sub-menu v-if="menu.children && menu.children.length > 0" :index="menu.path || '/'+menu.menuId">
+          <el-sub-menu v-if="hasVisibleChildren(menu)" :index="menu.path || '/'+menu.menuId">
             <template #title>
               <el-icon><component :is="getIcon(menu.icon)" /></el-icon>
               <span>{{ menu.name }}</span>
             </template>
             <el-menu-item 
-              v-for="child in menu.children" 
+              v-for="child in getVisibleChildren(menu)" 
               :key="child.menuId" 
               :index="child.path"
             >
@@ -127,6 +127,23 @@ const userMenus = computed(() => {
     return true;
   });
 });
+
+// 辅助函数：获取可见的子菜单
+const getVisibleChildren = (menu: any) => {
+  if (!menu.children) return [];
+  return menu.children.filter((child: any) => {
+    // 排除按钮类型（F）
+    if (child.menuType === 'F') return false;
+    // 排除外链（isFrame = 1）
+    if (child.isFrame === 1 || child.isFrame === '1') return false;
+    return true;
+  });
+};
+
+// 辅助函数：判断菜单是否有可见的子菜单
+const hasVisibleChildren = (menu: any) => {
+  return getVisibleChildren(menu).length > 0;
+};
 
 const handleCommand = async (command: string) => {
   if (command === 'logout') {
