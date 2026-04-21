@@ -27,7 +27,7 @@
               v-for="child in getVisibleChildren(menu)" 
               :key="child.menuId" 
               :index="child.path"
-              @click="handleMenuClick(child)"
+              @click="(e: Event) => handleMenuClick(child, e)"
             >
               {{ child.name }}
             </el-menu-item>
@@ -37,7 +37,7 @@
           <el-menu-item 
             v-else 
             :index="menu.path" 
-            @click="handleMenuClick(menu)"
+            @click="(e: Event) => handleMenuClick(menu, e)"
           >
             <el-icon><component :is="getIcon(menu.icon)" /></el-icon>
             <template #title>{{ menu.name }}</template>
@@ -156,9 +156,12 @@ const ensureProtocol = (url: string): string => {
 };
 
 // 处理菜单点击事件
-const handleMenuClick = (menu: any) => {
+const handleMenuClick = (menu: any, event: Event) => {
   // 如果是外链
   if (menu.menuType === 'L') {
+    // 阻止 Vue Router 导航
+    event.preventDefault();
+    
     const fullUrl = ensureProtocol(menu.path);
     
     if (menu.isFrame === 1 || menu.isFrame === '1') {
