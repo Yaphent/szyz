@@ -52,7 +52,7 @@ public class Menu implements Serializable {
     private Integer sort;
     
     /**
-     * 是否外链: 0-否, 1-是
+     * 外链打开方式: 0-新标签页打开, 1-嵌入式打开(iframe)
      */
     private Integer isFrame;
     

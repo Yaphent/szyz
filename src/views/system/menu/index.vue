@@ -86,6 +86,12 @@
         <el-form-item label="组件路径" v-if="form.menuType === 'C'">
           <el-input v-model="form.component" placeholder="请输入组件路径，如: system/user/index" />
         </el-form-item>
+        <el-form-item label="打开方式" v-if="form.menuType === 'L'">
+          <el-radio-group v-model="form.isFrame">
+            <el-radio :label="0">新标签页打开</el-radio>
+            <el-radio :label="1">嵌入式打开</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="权限标识" v-if="form.menuType === 'F'">
           <el-input v-model="form.perms" placeholder="请输入权限标识，如: sys:user:add" />
         </el-form-item>
@@ -169,7 +175,8 @@ const handleAdd = (parent: any) => {
     perms: '',
     icon: '',
     sort: 0,
-    status: 1
+    status: 1,
+    isFrame: 0  // 默认新标签页打开
   });
   dialogVisible.value = true;
 };

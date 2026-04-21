@@ -27,6 +27,7 @@
               v-for="child in getVisibleChildren(menu)" 
               :key="child.menuId" 
               :index="child.path"
+              @click="handleMenuClick(child)"
             >
               {{ child.name }}
             </el-menu-item>
@@ -80,7 +81,15 @@
       
       <!-- 主内容区 -->
       <el-main class="main">
-        <router-view />
+        <!-- 嵌入式外链 iframe -->
+        <div v-if="iframeUrl" class="iframe-container">
+          <div class="iframe-header">
+            <span class="iframe-title">{{ iframeTitle }}</span>
+            <el-button type="danger" size="small" @click="closeIframe">关闭</el-button>
+          </div>
+          <iframe :src="iframeUrl" class="iframe-content" frameborder="0"></iframe>
+        </div>
+        <router-view v-else />
       </el-main>
     </el-container>
   </el-container>
@@ -102,6 +111,8 @@ const router = useRouter();
 const userStore = useUserStore();
 
 const isCollapse = ref(false);
+const iframeUrl = ref('');
+const iframeTitle = ref('');
 const activeMenu = computed(() => route.path);
 const systemName = computed(() => userStore.getConfig('sys.system.name', '安阳智能监督平台'));
 
@@ -122,10 +133,23 @@ const getIcon = (iconName?: string) => {
 
 // 处理菜单点击事件
 const handleMenuClick = (menu: any) => {
-  // 如果是外链（isFrame = 1），在新窗口打开
-  if (menu.isFrame === 1 || menu.isFrame === '1') {
-    window.open(menu.path, '_blank');
+  // 如果是外链
+  if (menu.menuType === 'L') {
+    if (menu.isFrame === 1 || menu.isFrame === '1') {
+      // 嵌入式打开
+      iframeUrl.value = menu.path;
+      iframeTitle.value = menu.name;
+    } else {
+      // 新标签页打开
+      window.open(menu.path, '_blank');
+    }
   }
+};
+
+// 关闭 iframe
+const closeIframe = () => {
+  iframeUrl.value = '';
+  iframeTitle.value = '';
 };
 
 // 用户菜单
@@ -243,6 +267,38 @@ onMounted(async () => {
   background-color: #f5f7fa;
   padding: 16px;
   overflow-y: auto;
+}
+
+/* iframe 容器样式 */
+.iframe-container {
+  height: calc(100vh - 60px - 32px);
+  background: #fff;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.iframe-header {
+  height: 48px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+
+.iframe-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.iframe-content {
+  flex: 1;
+  width: 100%;
+  border: none;
 }
 
 /* 菜单样式 */
