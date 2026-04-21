@@ -17,7 +17,7 @@ public interface MenuService extends IService<Menu> {
     /**
      * 获取用户动态路由
      */
-    List<Menu> getRoutes(Long userId);
+    List<Menu> getRoutes(Long userId, boolean isSuperAdmin);
     
     /**
      * 根据URL获取菜单

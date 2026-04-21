@@ -37,7 +37,8 @@ public class MenuController {
     public R<List<Menu>> getRoute(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         Long userId = jwtUtils.getUserId(token);
-        return R.success(menuService.getRoutes(userId));
+        boolean isSuperAdmin = jwtUtils.isSuperAdmin(token);
+        return R.success(menuService.getRoutes(userId, isSuperAdmin));
     }
     
     /**

@@ -36,8 +36,15 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
     
     @Override
-    public List<Menu> getRoutes(Long userId) {
-        List<Menu> menus = baseMapper.selectRoutesByUserId(userId);
+    public List<Menu> getRoutes(Long userId, boolean isSuperAdmin) {
+        List<Menu> menus;
+        if (isSuperAdmin) {
+            // 超级管理员获取所有菜单
+            menus = baseMapper.selectAllRoutes();
+        } else {
+            // 普通用户根据角色获取菜单
+            menus = baseMapper.selectRoutesByUserId(userId);
+        }
         return buildTree(menus, 0L);
     }
     
