@@ -143,10 +143,24 @@ const getIcon = (iconName?: string) => {
   return iconMap[iconName || ''] || Menu;
 };
 
+// 确保 URL 有协议前缀
+const ensureProtocol = (url: string): string => {
+  if (!url) return url;
+  url = url.trim();
+  if (!url) return url;
+  // 如果没有协议前缀，添加 https://
+  if (!/^https?:\/\//i.test(url)) {
+    url = 'https://' + url;
+  }
+  return url;
+};
+
 // 处理菜单点击事件
 const handleMenuClick = (menu: any) => {
   // 如果是外链
   if (menu.menuType === 'L') {
+    const fullUrl = ensureProtocol(menu.path);
+    
     if (menu.isFrame === 1 || menu.isFrame === '1') {
       // 嵌入式打开
       iframeLoading.value = true;
@@ -154,12 +168,12 @@ const handleMenuClick = (menu: any) => {
       iframeTitle.value = menu.name;
       // 使用 nextTick 确保 DOM 更新后再设置 URL
       setTimeout(() => {
-        iframeUrl.value = menu.path;
+        iframeUrl.value = fullUrl;
       }, 100);
     } else {
       // 新标签页打开 - 直接使用 a 标签
       const link = document.createElement('a');
-      link.href = menu.path;
+      link.href = fullUrl;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       document.body.appendChild(link);
