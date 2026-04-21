@@ -156,14 +156,16 @@ const ensureProtocol = (url: string): string => {
 };
 
 // 处理菜单点击事件
-const handleMenuClick = (menu: any, event: Event) => {
+const handleMenuClick = (menu: any, event: any) => {
   console.log('[菜单点击]', menu.menuType, menu.name, menu.path, menu.isFrame);
   
   // 只有当 menuType 为 'L' 时才处理为外链
   if (menu.menuType === 'L') {
     console.log('[外链处理] 开始处理外链');
-    // 阻止默认行为
-    event.stopPropagation();
+    // 获取原生事件对象
+    const nativeEvent = event.nativeEvent || event;
+    nativeEvent.stopPropagation();
+    nativeEvent.preventDefault();
     
     const fullUrl = ensureProtocol(menu.path);
     console.log('[外链处理] 完整URL:', fullUrl);
