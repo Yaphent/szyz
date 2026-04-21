@@ -26,7 +26,7 @@
             <el-menu-item 
               v-for="child in getVisibleChildren(menu)" 
               :key="child.menuId" 
-              :index="child.path"
+              :index="child.menuType === 'L' ? '' : child.path"
               @click="(e: Event) => handleMenuClick(child, e)"
             >
               {{ child.name }}
@@ -36,7 +36,7 @@
           <!-- 没有子菜单的菜单项 -->
           <el-menu-item 
             v-else 
-            :index="menu.path" 
+            :index="menu.menuType === 'L' ? '' : menu.path" 
             @click="(e: Event) => handleMenuClick(menu, e)"
           >
             <el-icon><component :is="getIcon(menu.icon)" /></el-icon>
