@@ -79,7 +79,7 @@
         </div>
       </el-header>
       
-      <!-- 主内容区 -->
+      // 主内容区 -->
       <el-main class="main">
         <!-- 嵌入式外链 iframe -->
         <div v-if="iframeUrl" class="iframe-container">
@@ -87,7 +87,18 @@
             <span class="iframe-title">{{ iframeTitle }}</span>
             <el-button type="danger" size="small" @click="closeIframe">关闭</el-button>
           </div>
-          <iframe :src="iframeUrl" class="iframe-content" frameborder="0"></iframe>
+          <div v-if="iframeLoading" class="iframe-loading">
+            <el-icon class="is-loading"><Loading /></el-icon>
+            <span>页面加载中...</span>
+          </div>
+          <iframe 
+            v-show="!iframeLoading"
+            :src="iframeUrl" 
+            class="iframe-content" 
+            frameborder="0"
+            @load="iframeLoading = false"
+            @error="iframeLoading = false"
+          ></iframe>
         </div>
         <router-view v-else />
       </el-main>
@@ -103,7 +114,7 @@ import { useUserStore } from '../../store/user';
 import { authApi, menuApi } from '../../api';
 import {
   Odometer, Setting, User, Wallet, Menu, OfficeBuilding, Tools,
-  Fold, Expand, ArrowDown, ElementPlus
+  Fold, Expand, ArrowDown, ElementPlus, Loading
 } from '@element-plus/icons-vue';
 
 const route = useRoute();
@@ -113,6 +124,7 @@ const userStore = useUserStore();
 const isCollapse = ref(false);
 const iframeUrl = ref('');
 const iframeTitle = ref('');
+const iframeLoading = ref(false);
 const activeMenu = computed(() => route.path);
 const systemName = computed(() => userStore.getConfig('sys.system.name', '安阳智能监督平台'));
 
@@ -137,11 +149,22 @@ const handleMenuClick = (menu: any) => {
   if (menu.menuType === 'L') {
     if (menu.isFrame === 1 || menu.isFrame === '1') {
       // 嵌入式打开
-      iframeUrl.value = menu.path;
+      iframeLoading.value = true;
+      iframeUrl.value = '';
       iframeTitle.value = menu.name;
+      // 使用 nextTick 确保 DOM 更新后再设置 URL
+      setTimeout(() => {
+        iframeUrl.value = menu.path;
+      }, 100);
     } else {
-      // 新标签页打开
-      window.open(menu.path, '_blank');
+      // 新标签页打开 - 直接使用 a 标签
+      const link = document.createElement('a');
+      link.href = menu.path;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   }
 };
@@ -299,6 +322,20 @@ onMounted(async () => {
   flex: 1;
   width: 100%;
   border: none;
+}
+
+.iframe-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #909399;
+}
+
+.iframe-loading .el-icon {
+  font-size: 32px;
 }
 
 /* 菜单样式 */
