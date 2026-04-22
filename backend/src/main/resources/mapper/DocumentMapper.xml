@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.permission.mapper.DocumentMapper">
+
+    <!-- 文档 VO 基础字段映射 -->
+    <resultMap id="DocumentVOMap" type="com.permission.dto.DocumentVO">
+        <id     column="id"                property="id"/>
+        <result column="name"              property="name"/>
+        <result column="policy_prefix"     property="policyPrefix"/>
+        <result column="policy_year"       property="policyYear"/>
+        <result column="policy_no"         property="policyNo"/>
+        <result column="business_type"     property="businessType"/>
+        <result column="keywords"          property="keywords"/>
+        <result column="issuing_authority" property="issuingAuthority"/>
+        <result column="issuing_date"      property="issuingDate"/>
+        <result column="effective_date"    property="effectiveDate"/>
+        <result column="expiry_date"       property="expiryDate"/>
+        <result column="law_level"         property="lawLevel"/>
+        <result column="timeliness"        property="timeliness"/>
+        <result column="summary"           property="summary"/>
+        <result column="control_mode"     property="controlMode"/>
+        <result column="main_file_id"      property="mainFileId"/>
+        <result column="status"            property="status"/>
+        <result column="create_by"         property="createBy"/>
+        <result column="create_time"       property="createTime"/>
+        <result column="update_by"         property="updateBy"/>
+        <result column="update_time"       property="updateTime"/>
+        <result column="dify_document_id" property="difyDocumentId" jdbcType="VARCHAR"/>
+        <result column="summary_status" property="summaryStatus" jdbcType="INTEGER"/>
+        <result column="vectorization_status" property="vectorizationStatus" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <!-- 分页查询 -->
+    <select id="selectDocumentPage" resultMap="DocumentVOMap">
+        SELECT
+            id, name, policy_prefix, policy_year, policy_no,
+            business_type, keywords, issuing_authority,
+            issuing_date, effective_date, expiry_date,
+            law_level, timeliness, summary, control_mode,
+            main_file_id, status,
+            create_by, create_time, update_by, update_time,
+            dify_document_id, summary_status, vectorization_status
+        FROM t_document
+        <where>
+            deleted = 0
+            <if test="q.name != null and q.name != ''">
+                AND name LIKE CONCAT('%', #{q.name}, '%')
+            </if>
+            <if test="q.policyNo != null and q.policyNo != ''">
+                AND policy_no LIKE CONCAT('%', #{q.policyNo}, '%')
+            </if>
+            <if test="q.businessType != null and q.businessType != ''">
+                AND business_type = #{q.businessType}
+            </if>
+            <if test="q.status != null">
+                AND status = #{q.status}
+            </if>
+            <if test="q.startDate != null">
+                AND issuing_date &gt;= #{q.startDate}
+            </if>
+            <if test="q.endDate != null">
+                AND issuing_date &lt;= #{q.endDate}
+            </if>
+        </where>
+        ORDER BY create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.permission.entity.Document">
+        INSERT INTO t_document (
+            name,
+            policy_prefix,
+            policy_year,
+            policy_no,
+            business_type,
+            keywords,
+            issuing_authority,
+            issuing_date,
+            effective_date,
+            expiry_date,
+            law_level,
+            timeliness,
+            summary,
+            control_mode,
+            main_file_id,
+            status,
+            deleted,
+            dify_document_id,
+            summary_status,
+            vectorization_status
+        )
+        VALUES (
+            #{name},
+            #{policyPrefix},
+            #{policyYear},
+            #{policyNo},
+            #{businessType},
+            #{keywords},
+            #{issuingAuthority},
+            #{issuingDate},
+            #{effectiveDate},
+            #{expiryDate},
+            #{lawLevel},
+            #{timeliness},
+            #{summary},
+            #{controlMode},
+            #{mainFileId},
+            #{status},
+            #{deleted},
+            #{difyDocumentId},
+            #{summaryStatus},
+            #{vectorizationStatus}
+        )
+    </insert>
+
+</mapper>

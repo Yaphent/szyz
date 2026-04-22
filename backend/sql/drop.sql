@@ -20,6 +20,12 @@ DROP TABLE IF EXISTS sys_role;
 DROP TABLE IF EXISTS sys_menu;
 DROP TABLE IF EXISTS sys_dept;
 
+-- 删除文档管理相关表
+DROP TABLE IF EXISTS t_document;
+DROP TABLE IF EXISTS t_document_file;
+DROP TABLE IF EXISTS t_document_tag;
+DROP TABLE IF EXISTS t_dict_tag;
+
 -- 重新开启外键检查
 SET FOREIGN_KEY_CHECKS = 1;
 

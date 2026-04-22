@@ -48,6 +48,20 @@ const routes: RouteRecordRaw[] = [
         name: 'ConfigManage',
         component: () => import('../views/system/config/index.vue'),
         meta: { title: '参数管理', icon: 'Tools' }
+      },
+      // ================ 法规文档管理 ================
+      {
+        path: 'document',
+        name: 'DocumentList',
+        component: () => import('../views/document/DocumentList.vue'),
+        meta: { title: '法规文档', icon: 'Document' }
+      },
+      {
+        path: 'document/detail/:id',
+        name: 'DocumentDetail',
+        component: () => import('../views/document/DocumentDetail.vue'),
+        props: true,
+        meta: { title: '文档详情', icon: 'Document', hidden: true, activeMenu: '/document' }
       }
     ]
   }

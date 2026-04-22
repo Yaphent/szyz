@@ -4,20 +4,49 @@ server:
 spring:
   application:
     name: permission-platform
-  
+
   # MySQL配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.177.101:3306/permission_db?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false
     username: root
     password: 123456
-  
+
   # Redis配置（可选）
   redis:
     host: 192.168.177.101
     port: 6379
     password:
     database: 0
+
+  # 文件上传配置
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 50MB
+      max-request-size: 200MB
+      file-size-threshold: 2MB
+
+# 文件存储配置（local 或 minio 任选其一）
+file-storage:
+  type: minio                                  # local / minio
+  domain: http://localhost:8080
+  local:
+    root-path: ./upload                        # 本地存储根目录
+    url-prefix: /api/document/static           # HTTP 访问前缀
+  minio:
+    endpoint: http://192.168.1.66:19000
+    access-key: minio
+    secret-key: 7aSGeRDJnTDxrcnP
+    bucket: filebucket
+
+# Dify 配置
+dify:
+  api:
+    url: http://localhost:5001/v1             # Dify API 地址
+    key: your-dify-api-key                    # Dify API 密钥
+  dataset:
+    id: your-dataset-id                       # Dify 知识库 ID
 
 # MyBatis-Plus配置
 mybatis-plus:
