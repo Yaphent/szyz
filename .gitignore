@@ -67,4 +67,8 @@ Thumbs.db
 
 .coze-logs
 
- backend/target/
+# Maven 编译目录
+backend/target/
+
+# Trae IDE
+.trae/
