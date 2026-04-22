@@ -16,11 +16,23 @@
 │   │   └── controller/       # 控制器
 │   ├── src/main/resources/   # 配置文件
 │   └── sql/                  # 数据库脚本
-├── src/                      # Vue 3 前端
-│   ├── api/                 # API 接口
-│   ├── store/               # 状态管理
-│   ├── router/              # 路由配置
-│   └── views/               # 页面组件
+├── frontend/                   # Vue 3 前端
+│   ├── src/                  # 源代码
+│   │   ├── api/              # API 接口
+│   │   ├── store/            # 状态管理
+│   │   ├── router/           # 路由配置
+│   │   └── views/            # 页面组件
+│   ├── server/               # Express 服务器
+│   │   ├── routes/           # 路由定义
+│   │   ├── server.ts         # 服务器入口
+│   │   └── vite.ts           # Vite 集成
+│   ├── scripts/              # 脚本文件
+│   │   ├── dev.sh            # 开发启动脚本
+│   │   ├── start.sh          # 生产启动脚本
+│   │   └── ...               # 其他脚本
+│   ├── index.html            # 入口HTML文件
+│   ├── package.json          # 依赖配置
+│   └── vite.config.ts        # 构建配置
 └── README.md
 ```
 
@@ -93,6 +105,9 @@ java -jar target/permission-platform-1.0.0.jar
 ### 2. 前端启动
 
 ```bash
+# 进入前端目录
+cd frontend
+
 # 安装依赖
 pnpm install
 

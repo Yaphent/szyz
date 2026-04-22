@@ -4,9 +4,9 @@ node_modules/
 .pnp.js
 
 # Production build
-dist/
-dist-server/
-build/
+frontend/dist/
+frontend/dist-server/
+frontend/build/
 out/
 
 # Testing
@@ -63,7 +63,7 @@ Thumbs.db
 *.tsbuildinfo
 
 # Vite
-.vite/
+frontend/.vite/
 
 .coze-logs
 

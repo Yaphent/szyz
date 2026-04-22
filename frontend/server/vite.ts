@@ -6,7 +6,7 @@ import express from 'express';
 import path from 'path';
 import fs from 'fs';
 import { createServer as createViteServer } from 'vite';
-import viteConfig from '../vite.config';
+import viteConfig from '../vite.config.ts';
 
 const isDev = process.env.COZE_PROJECT_ENV !== 'PROD';
 

@@ -7,7 +7,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint",
-    "ts-check": "tsc -p tsconfig.json"
+    "ts-check": "tsc -p tsconfig.json",
+    "dev:scripts": "node scripts/dev.sh",
+    "start": "node scripts/start.sh"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
