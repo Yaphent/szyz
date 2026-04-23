@@ -4,11 +4,15 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
  * 法规文档主实体
+ */
+/**
+ * 
  */
 @Data
 @TableName("t_document")
@@ -84,11 +88,61 @@ public class Document implements Serializable {
     @TableField(value = "summary_status")
     private Integer summaryStatus;
 
+
+
     /**
-     * 向量化状态 (0-待处理, 1-处理中, 2-已完成, 3-失败)
+     * Dify 知识流水线中的文件 ID
      */
-    @TableField(value = "vectorization_status")
-    private Integer vectorizationStatus;
+    @TableField(value = "dify_file_id")
+    private String difyFileId;
+
+    /**
+     * Dify 处理状态 (pending-待处理, processing-处理中, completed-完成, failed-失败)
+     */
+    @TableField(value = "dify_processing_status")
+    private String difyProcessingStatus;
+
+    /**
+     * Dify 中文件的访问 URL
+     */
+    @TableField(value = "dify_file_url")
+    private String difyFileUrl;
+
+    /**
+     * Dify 文件上传时间
+     */
+    @TableField(value = "dify_upload_time")
+    private LocalDateTime difyUploadTime;
+
+    /**
+     * Dify 流水线处理结果
+     */
+    @TableField(value = "dify_pipeline_result")
+    private String difyPipelineResult;
+
+    /**
+     * Dify 分段数量
+     */
+    @TableField(value = "dify_segment_count")
+    private Integer difySegmentCount;
+
+    /**
+     * Dify 索引延迟(秒)
+     */
+    @TableField(value = "dify_indexing_latency")
+    private BigDecimal difyIndexingLatency;
+
+    /**
+     * Dify 解析后的内容 URL
+     */
+    @TableField(value = "dify_parsed_content_url")
+    private String difyParsedContentUrl;
+    
+    /**
+     * Dify 流水线解析状态 (0-待解析, 1-解析中, 2-解析成功, 3-解析失败)
+     */
+    @TableField(value = "dify_pipeline_status")
+    private Integer difyPipelineStatus;
 
     /** 创建人 */
     @TableField(fill = FieldFill.INSERT)

@@ -28,7 +28,17 @@
         <result column="update_time"       property="updateTime"/>
         <result column="dify_document_id" property="difyDocumentId" jdbcType="VARCHAR"/>
         <result column="summary_status" property="summaryStatus" jdbcType="INTEGER"/>
-        <result column="vectorization_status" property="vectorizationStatus" jdbcType="INTEGER"/>
+
+        <result column="dify_file_id" property="difyFileId" jdbcType="VARCHAR"/>
+        <result column="dify_processing_status" property="difyProcessingStatus" jdbcType="VARCHAR"/>
+        <result column="dify_file_url" property="difyFileUrl" jdbcType="VARCHAR"/>
+        <result column="dify_upload_time" property="difyUploadTime" jdbcType="TIMESTAMP"/>
+        <result column="dify_pipeline_result" property="difyPipelineResult" jdbcType="LONGVARCHAR"/>
+        <result column="dify_segment_count" property="difySegmentCount" jdbcType="INTEGER"/>
+        <result column="dify_indexing_latency" property="difyIndexingLatency" jdbcType="DECIMAL"/>
+        <result column="dify_parsed_content_url" property="difyParsedContentUrl" jdbcType="VARCHAR"/>
+        <result column="dify_pipeline_status" property="difyPipelineStatus" jdbcType="INTEGER"/>
+        <result column="dify_pipeline_result" property="difyPipelineResult" jdbcType="LONGVARCHAR"/>
     </resultMap>
 
     <!-- 分页查询 -->
@@ -40,7 +50,10 @@
             law_level, timeliness, summary, control_mode,
             main_file_id, status,
             create_by, create_time, update_by, update_time,
-            dify_document_id, summary_status, vectorization_status
+            dify_document_id, summary_status,
+            dify_file_id, dify_processing_status, dify_file_url, dify_upload_time,
+            dify_pipeline_result, dify_segment_count, dify_indexing_latency, dify_parsed_content_url,
+            dify_pipeline_status
         FROM t_document
         <where>
             deleted = 0
@@ -87,7 +100,15 @@
             deleted,
             dify_document_id,
             summary_status,
-            vectorization_status
+            dify_file_id,
+            dify_processing_status,
+            dify_file_url,
+            dify_upload_time,
+            dify_pipeline_result,
+            dify_segment_count,
+            dify_indexing_latency,
+            dify_parsed_content_url,
+            dify_pipeline_status
         )
         VALUES (
             #{name},
@@ -109,7 +130,15 @@
             #{deleted},
             #{difyDocumentId},
             #{summaryStatus},
-            #{vectorizationStatus}
+            #{difyFileId},
+            #{difyProcessingStatus},
+            #{difyFileUrl},
+            #{difyUploadTime},
+            #{difyPipelineResult},
+            #{difySegmentCount},
+            #{difyIndexingLatency},
+            #{difyParsedContentUrl},
+            #{difyPipelineStatus}
         )
     </insert>
 

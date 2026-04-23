@@ -65,7 +65,7 @@ public class DocumentController {
     public R<PageResult<DocumentVO>> page(DocumentQueryDTO query) {
         return R.success(documentService.pageQuery(query));
     }
-
+    
     /**
      * 查询详情
      */
@@ -141,6 +141,24 @@ public class DocumentController {
     public R<FileUploadVO> upload(@RequestParam("file") MultipartFile file,
                                   @RequestParam(value = "category", defaultValue = "2") Integer category) {
         return R.success(documentService.uploadFile(file, category), "上传成功");
+    }
+
+    /**
+     * 上传文件到 Dify 知识流水线
+     *
+     * @param file     文件
+     * @param category 1=主文件, 2=附件（默认 2）
+     */
+    @PostMapping("/upload-pipeline")
+    public R<FileUploadVO> uploadToDifyPipeline(@RequestParam("file") MultipartFile file,
+                                               @RequestParam(value = "category", defaultValue = "2") Integer category) {
+        try {
+            FileUploadVO result = documentService.uploadFileToDifyPipeline(file, category);
+            return R.success(result, "上传到Dify知识流水线成功");
+        } catch (Exception e) {
+            log.error("上传文件到Dify知识流水线失败", e);
+            return R.error(500, "上传失败: " + e.getMessage());
+        }
     }
 
     /**
@@ -229,37 +247,22 @@ public class DocumentController {
 
         Map<String, Object> statusInfo = new HashMap<>();
         statusInfo.put("summaryStatus", document.getSummaryStatus());
-        statusInfo.put("vectorizationStatus", document.getVectorizationStatus());
         statusInfo.put("difyDocumentId", document.getDifyDocumentId());
         
         return R.success(statusInfo, "获取成功");
     }
-
+    
     /**
-     * 对文档进行向量化处理
+     * 运行文档的 Dify 知识流水线解析
      */
-    @PostMapping("/vectorize/{id}")
-    public R<Void> vectorizeDocument(@PathVariable Long id) {
+    @PostMapping("/run-pipeline/{id}")
+    public R<Void> runDifyPipeline(@PathVariable Long id) {
         try {
-            documentService.vectorizeDocument(id);
-            return R.success(null, "文档向量化处理已启动");
+            documentService.runDifyPipeline(id);
+            return R.success(null, "Dify知识流水线解析已启动");
         } catch (Exception e) {
-            log.error("文档向量化处理失败，文档ID: {}", id, e);
-            return R.error(500, "文档向量化处理失败: " + e.getMessage());
-        }
-    }
-
-    /**
-     * 删除文档的向量化数据
-     */
-    @DeleteMapping("/vectorize/{id}")
-    public R<Void> deleteVectorizedDocument(@PathVariable Long id) {
-        try {
-            documentService.deleteVectorizedDocument(id);
-            return R.success(null, "文档向量化数据已删除");
-        } catch (Exception e) {
-            log.error("删除文档向量化数据失败，文档ID: {}", id, e);
-            return R.error(500, "删除文档向量化数据失败: " + e.getMessage());
+            log.error("运行Dify知识流水线解析失败，文档ID: {}", id, e);
+            return R.error(500, "运行Dify知识流水线解析失败: " + e.getMessage());
         }
     }
 

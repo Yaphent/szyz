@@ -170,18 +170,18 @@
                 摘要: {{ getSummaryStatusText(row.summaryStatus) }}
               </el-tag>
               <el-tag 
-                :type="getVectorizationStatusType(row.vectorizationStatus)" 
+                :type="getPipelineStatusType(row.difyPipelineStatus)" 
                 size="small"
                 effect="plain"
-                :title="'向量化: ' + getVectorizationStatusText(row.vectorizationStatus)"
+                :title="getPipelineStatusText(row.difyPipelineStatus)"
               >
-                向量: {{ getVectorizationStatusText(row.vectorizationStatus) }}
+                解析: {{ getPipelineStatusText(row.difyPipelineStatus) }}
               </el-tag>
             </div>
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" width="360" fixed="right">
+        <el-table-column label="操作" width="300" fixed="right">
           <template #default="{ row }">
             <el-button link type="primary" @click="handleView(row)">查看</el-button>
             <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
@@ -192,8 +192,7 @@
             >
               {{ row.status === 1 ? '停用' : '启用' }}
             </el-button>
-            <el-button link type="info" @click="handleVectorize(row)">向量化</el-button>
-            <el-button link type="danger" @click="handleDeleteVectorized(row)">删除向量化</el-button>
+            <el-button link type="info" @click="handleRunPipeline(row)">解析</el-button>
             <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -316,17 +315,17 @@ const getSummaryStatusType = (status: number) => {
   return typeMap[status] || 'info';
 };
 
-const getVectorizationStatusText = (status: number) => {
+const getPipelineStatusText = (status: number) => {
   const statusMap: Record<number, string> = {
-    0: '待处理',
-    1: '处理中',
-    2: '已完成',
-    3: '失败'
+    0: '待解析',
+    1: '解析中',
+    2: '解析成功',
+    3: '解析失败'
   };
   return statusMap[status] || '未知';
 };
 
-const getVectorizationStatusType = (status: number) => {
+const getPipelineStatusType = (status: number) => {
   const typeMap: Record<number, string> = {
     0: 'info',
     1: 'warning',
@@ -335,6 +334,8 @@ const getVectorizationStatusType = (status: number) => {
   };
   return typeMap[status] || 'info';
 };
+
+
 
 // -------- 数据加载 --------
 const loadData = async () => {
@@ -520,37 +521,22 @@ const handleExport = () => {
   ElMessage.success('已导出当前页数据');
 };
 
-// ============ 向量化处理 ============
-const handleVectorize = async (row: any) => {
+
+
+// ============ 运行Dify流水线解析 ============
+const handleRunPipeline = async (row: any) => {
   await ElMessageBox.confirm(
-    `确定对文档"${row.name}"进行向量化处理吗？此操作将使用Dify服务处理文档内容。`,
-    '向量化确认',
+    `确定对文档"${row.name}"运行Dify知识流水线解析吗？此操作将使用Dify服务处理文档内容。`,
+    '运行解析确认',
     { type: 'info', confirmButtonText: '确认处理', cancelButtonText: '取消' }
   );
   try {
-    await documentApi.vectorizeDocument(row.id);
-    ElMessage.success('向量化处理已启动');
+    await documentApi.runPipeline(row.id);
+    ElMessage.success('Dify知识流水线解析已启动');
     // 刷新数据以更新状态
     loadData();
   } catch (e: any) {
-    ElMessage.error(e?.message || '向量化处理失败');
-  }
-};
-
-// ============ 删除向量化数据 ============
-const handleDeleteVectorized = async (row: any) => {
-  await ElMessageBox.confirm(
-    `确定删除文档"${row.name}"的向量化数据吗？此操作将从Dify知识库中删除相关数据。`,
-    '删除向量化数据确认',
-    { type: 'warning', confirmButtonText: '确认删除', cancelButtonText: '取消' }
-  );
-  try {
-    await documentApi.deleteVectorizedDocument(row.id);
-    ElMessage.success('向量化数据已删除');
-    // 刷新数据以更新状态
-    loadData();
-  } catch (e: any) {
-    ElMessage.error(e?.message || '删除向量化数据失败');
+    ElMessage.error(e?.message || '运行解析失败');
   }
 };
 

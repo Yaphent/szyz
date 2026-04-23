@@ -39,7 +39,7 @@ public class DocumentFile implements Serializable {
     /** 文件扩展名 */
     private String fileType;
 
-    /** 1主文件 2附件 */
+    /** 1主文件（当前系统只使用主文件类型） */
     private Integer fileCategory;
 
     /** 存储类型:local/minio */

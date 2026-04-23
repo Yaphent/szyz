@@ -29,4 +29,7 @@ public class FileUploadVO implements Serializable {
 
     /** 存储类型 */
     private String storageType;
+
+    /** 文档ID(t_document 主键) */
+    private Long documentId;
 }

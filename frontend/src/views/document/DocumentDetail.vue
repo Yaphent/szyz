@@ -223,19 +223,7 @@
           </el-col>
         </el-row>
 
-        <el-row :gutter="20">
-          <!-- 附件 -->
-          <el-col :span="24">
-            <el-form-item label="附件">
-              <FileUploadCard
-                v-model="attachmentList"
-                :category="2"
-                :multiple="true"
-                :disabled="readOnly"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
+
 
         <el-row :gutter="20">
           <!-- 摘要 占满整行 -->
@@ -260,11 +248,11 @@
                     摘要: {{ getSummaryStatusText(difyStatus.summaryStatus) }}
                   </el-tag>
                   <el-tag 
-                    :type="getVectorizationStatusType(difyStatus.vectorizationStatus)" 
+                    :type="getPipelineStatusType(difyStatus.difyPipelineStatus)" 
                     size="small"
                     effect="plain"
                   >
-                    向量化: {{ getVectorizationStatusText(difyStatus.vectorizationStatus) }}
+                    解析: {{ getPipelineStatusText(difyStatus.difyPipelineStatus) }}
                   </el-tag>
                 </div>
               </div>
@@ -348,13 +336,12 @@ const defaultForm = (): DocumentForm => ({
   summary: '',
   controlMode: 'UNIFIED',
   mainFileId: undefined,
-  attachmentIds: [],
   tags: []
 });
 
 const form = reactive<DocumentForm>(defaultForm());
 const mainFileList = ref<FileItem[]>([]);
-const attachmentList = ref<FileItem[]>([]);
+
 
 // Dify 状态相关
 const difyStatus = ref<any>(null);
@@ -410,18 +397,7 @@ const loadDetail = async () => {
       ];
       form.mainFileId = d.mainFile.id || d.mainFile.fileId;
     }
-    // 附件
-    if (Array.isArray(d.attachments)) {
-      attachmentList.value = d.attachments.map((f: any) => ({
-        fileId: f.id || f.fileId,
-        fileName: f.fileName,
-        fileUrl: f.fileUrl,
-        fileSize: f.fileSize,
-        fileType: f.fileType,
-        uploadTime: f.createTime || f.uploadTime
-      }));
-      form.attachmentIds = attachmentList.value.map((f) => f.fileId).filter(Boolean) as number[];
-    }
+
     
     // 加载 Dify 状态
     await loadDifyStatus();
@@ -463,17 +439,17 @@ const getSummaryStatusType = (status: number) => {
   return typeMap[status] || 'info';
 };
 
-const getVectorizationStatusText = (status: number) => {
+const getPipelineStatusText = (status: number) => {
   const statusMap: Record<number, string> = {
-    0: '待处理',
-    1: '处理中',
-    2: '已完成',
-    3: '失败'
+    0: '待解析',
+    1: '解析中',
+    2: '解析成功',
+    3: '解析失败'
   };
   return statusMap[status] || '未知';
 };
 
-const getVectorizationStatusType = (status: number) => {
+const getPipelineStatusType = (status: number) => {
   const typeMap: Record<number, string> = {
     0: 'info',
     1: 'warning',
@@ -482,6 +458,8 @@ const getVectorizationStatusType = (status: number) => {
   };
   return typeMap[status] || 'info';
 };
+
+
 
 // ============ 解析回填 ============
 const handleParseContent = async (content: string) => {
@@ -535,7 +513,6 @@ const buildSubmitPayload = (): DocumentForm => {
   return {
     ...form,
     mainFileId: mainFileList.value[0]?.fileId,
-    attachmentIds: attachmentList.value.map((f) => f.fileId).filter(Boolean) as number[],
     tags: form.tags || []
   };
 };

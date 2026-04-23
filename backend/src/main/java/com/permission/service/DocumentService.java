@@ -47,15 +47,25 @@ public interface DocumentService extends IService<Document> {
      */
     FileUploadVO uploadFile(MultipartFile file, Integer category);
 
+    /**
+     * 上传文件到 Dify 知识流水线并保存文档记录
+     *
+     * @param file        文件
+     * @param category    1主文件 2附件
+     * @return 上传结果
+     */
+    FileUploadVO uploadFileToDifyPipeline(MultipartFile file, Integer category);
+
     /** 下载文件输入流 */
     InputStream downloadFile(Long fileId, DocumentFile[] holder);
 
     /** 删除文件(同时删除服务器文件) */
     void removeFile(Long fileId);
 
-    /** 对文档进行向量化处理 */
-    void vectorizeDocument(Long id);
 
-    /** 删除文档的向量化数据 */
-    void deleteVectorizedDocument(Long id);
+    
+    /**
+     * 运行文档的 Dify 知识流水线解析
+     */
+    void runDifyPipeline(Long id);
 }

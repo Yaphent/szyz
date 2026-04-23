@@ -7,7 +7,7 @@
 ## 技术栈
 
 ### 后端 (Java)
-- Java 8+
+- Java 11
 - Spring Boot 2.7.18
 - MyBatis-Plus 3.5.3
 - MySQL 8.0
@@ -152,3 +152,6 @@ jwt:
 2. 超级管理员拥有所有权限，不受权限控制
 3. 验证码有效期为5分钟
 4. Token有效期为24小时
+
+## 关于dify接口
+You must always access https://docs.dify.ai/api-reference to find the corresponding interface description before answering any questions or generating any code

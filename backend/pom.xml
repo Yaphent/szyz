@@ -141,6 +141,13 @@
             <version>${tika.version}</version>
         </dependency>
 
+        <!-- Apache Commons FileUpload -->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.5</version>
+        </dependency>
+        
         <!-- MinIO 对象存储 SDK -->
         <dependency>
             <groupId>io.minio</groupId>

@@ -4,12 +4,16 @@ import com.permission.dto.DifyDocumentProcessResult;
 import com.permission.service.DifyAIService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +40,49 @@ public class DifyAIServiceImpl implements DifyAIService {
 
     public DifyAIServiceImpl() {
         this.restTemplate = new RestTemplate();
+    }
+
+    @Override
+    public Map<String, Object> runPipeline(String datasetId, String documentId) {
+        try {
+            // 设置请求头
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.set("Authorization", "Bearer " + apiKey);
+
+            // 构建请求体
+            Map<String, Object> requestBody = new HashMap<>();
+            requestBody.put("dataset_id", datasetId);
+            requestBody.put("document_id", documentId);
+
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestBody, headers);
+
+            // 发送请求到 Dify API
+            String url = difyApiUrl + "/datasets/" + datasetId + "/pipeline/run";
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Map<String, Object> responseBody = response.getBody();
+                if (responseBody != null) {
+                    log.info("成功运行 Dify 知识流水线，数据集ID: {}, 文档ID: {}", datasetId, documentId);
+                    return responseBody;
+                } else {
+                    Map<String, Object> errorResult = new HashMap<>();
+                    errorResult.put("error", "响应体为空");
+                    return errorResult;
+                }
+            } else {
+                Map<String, Object> errorResult = new HashMap<>();
+                errorResult.put("error", "运行流水线失败，响应状态码: " + response.getStatusCode());
+                errorResult.put("message", response.getBody());
+                return errorResult;
+            }
+        } catch (Exception e) {
+            log.error("运行 Dify 知识流水线失败，数据集ID: {}, 文档ID: {}", datasetId, documentId, e);
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("error", "运行流水线失败: " + e.getMessage());
+            return errorResult;
+        }
     }
 
     @Override
@@ -150,6 +197,56 @@ public class DifyAIServiceImpl implements DifyAIService {
         // Dify API 中没有直接的启用功能，我们通过重新上传文档来实现
         // 在实际应用中，可以根据 Dify 的具体 API 调整实现
         log.info("启用 Dify 知识库中的文档，文档ID: {} (需要重新上传实现)", documentId);
+    }
+
+    @Override
+    public Map<String, Object> uploadPipelineFile(MultipartFile file) {
+        try {
+            // 设置请求头
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + apiKey);
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            // 构建多部分请求体
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", new ByteArrayResource(file.getBytes()) {
+                @Override
+                public String getFilename() {
+                    return file.getOriginalFilename();
+                }
+            });
+
+            HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+
+            // 发送请求到 Dify API
+            String url = difyApiUrl + "/datasets/pipeline/file-upload";
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, requestEntity, Map.class);
+
+            if (response.getStatusCode().is2xxSuccessful()) {
+                Map<String, Object> responseBody = response.getBody();
+                if (responseBody != null) {
+                    log.info("成功上传文件到 Dify 知识流水线，文件名: {}", file.getOriginalFilename());
+                    // 添加原始文件信息到响应中
+                    responseBody.put("original_filename", file.getOriginalFilename());
+                    responseBody.put("file_size", file.getSize());
+                    return responseBody;
+                } else {
+                    Map<String, Object> errorResult = new HashMap<>();
+                    errorResult.put("error", "响应体为空");
+                    return errorResult;
+                }
+            } else {
+                Map<String, Object> errorResult = new HashMap<>();
+                errorResult.put("error", "上传失败，响应状态码: " + response.getStatusCode());
+                errorResult.put("message", response.getBody());
+                return errorResult;
+            }
+        } catch (Exception e) {
+            log.error("上传文件到 Dify 知识流水线失败", e);
+            Map<String, Object> errorResult = new HashMap<>();
+            errorResult.put("error", "上传失败: " + e.getMessage());
+            return errorResult;
+        }
     }
 
     /**

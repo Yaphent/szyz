@@ -76,8 +76,7 @@ public class DocumentDTO implements Serializable {
     /** 主文件ID */
     private Long mainFileId;
 
-    /** 附件ID列表 */
-    private List<Long> attachmentIds;
+
 
     /** 标签列表 */
     private List<String> tags;

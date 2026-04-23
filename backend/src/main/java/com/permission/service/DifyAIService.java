@@ -1,6 +1,9 @@
 package com.permission.service;
 
 import com.permission.dto.DifyDocumentProcessResult;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Map;
 
 /**
  * Dify AI 服务接口
@@ -47,4 +50,21 @@ public interface DifyAIService {
      * @param documentId 文档在 Dify 知识库中的 ID
      */
     void enableDocumentInKnowledgeBase(String documentId);
+
+    /**
+     * 上传文件到 Dify 知识流水线
+     * 
+     * @param file 要上传的文件
+     * @return 上传结果，包含文件ID、名称、大小等信息
+     */
+    Map<String, Object> uploadPipelineFile(MultipartFile file);
+    
+    /**
+     * 运行 Dify 知识流水线
+     * 
+     * @param datasetId 数据集ID
+     * @param documentId 文档ID
+     * @return 运行结果
+     */
+    Map<String, Object> runPipeline(String datasetId, String documentId);
 }

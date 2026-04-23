@@ -49,12 +49,12 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../views/system/config/index.vue'),
         meta: { title: '参数管理', icon: 'Tools' }
       },
-      // ================ 法规文档管理 ================
+      // ================ 文档管理 ================
       {
         path: 'document',
         name: 'DocumentList',
         component: () => import('../views/document/DocumentList.vue'),
-        meta: { title: '法规文档', icon: 'Document' }
+        meta: { title: '文档管理', icon: 'Document' }
       },
       {
         path: 'document/detail/:id',

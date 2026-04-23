@@ -39,7 +39,7 @@
 ## 技术栈
 
 ### 后端
-- **Java 8+**
+- **Java 11
 - **Spring Boot 2.7.18**
 - **MyBatis-Plus 3.5.3**
 - **MySQL 8.0**

@@ -3,7 +3,9 @@ package com.permission.dto;
 import com.permission.entity.DocumentFile;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -77,8 +79,7 @@ public class DocumentVO {
     /** 主文件信息 */
     private DocumentFile mainFile;
 
-    /** 附件列表 */
-    private List<DocumentFile> attachments;
+
 
     /** 标签列表 */
     private List<String> tags;
@@ -89,6 +90,32 @@ public class DocumentVO {
     /** 摘要状态 (0-待处理, 1-处理中, 2-已完成, 3-失败) */
     private Integer summaryStatus;
 
-    /** 向量化状态 (0-待处理, 1-处理中, 2-已完成, 3-失败) */
-    private Integer vectorizationStatus;
+
+
+    /** Dify 知识流水线中的文件 ID */
+    private String difyFileId;
+
+    /** Dify 处理状态 (pending-待处理, processing-处理中, completed-完成, failed-失败) */
+    private String difyProcessingStatus;
+
+    /** Dify 中文件的访问 URL */
+    private String difyFileUrl;
+
+    /** Dify 文件上传时间 */
+    private LocalDateTime difyUploadTime;
+
+    /** Dify 分段数量 */
+    private Integer difySegmentCount;
+
+    /** Dify 索引延迟(秒) */
+    private BigDecimal difyIndexingLatency;
+
+    /** Dify 解析后的内容 URL */
+    private String difyParsedContentUrl;
+    
+    /** Dify 流水线解析状态 (0-待解析, 1-解析中, 2-解析成功, 3-解析失败) */
+    private Integer difyPipelineStatus;
+    
+    /** Dify 流水线解析结果 */
+    private String difyPipelineResult;
 }

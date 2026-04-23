@@ -108,7 +108,7 @@ interface FileItem {
 const props = defineProps<{
   /** 文件列表(v-model) */
   modelValue?: FileItem[];
-  /** 文件类别：1主文件 2附件 */
+  /** 文件类别：1主文件（当前系统只使用主文件类型） */
   category?: 1 | 2;
   /** 是否多文件 */
   multiple?: boolean;
@@ -163,7 +163,7 @@ const customUpload = async (option: any) => {
   const rawFile: File = option.file;
   lastRawFile.value = rawFile;
   try {
-    const res: any = await documentApi.uploadFile(rawFile, props.category || 2);
+    const res: any = await documentApi.uploadFile(rawFile, props.category || 1);
     const data = res.data || {};
     const item: FileItem = {
       fileId: data.fileId,

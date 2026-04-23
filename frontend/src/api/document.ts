@@ -34,7 +34,7 @@ export interface DocumentForm {
   summary?: string;
   controlMode: string;
   mainFileId?: number;
-  attachmentIds?: number[];
+
   tags?: string[];
 }
 
@@ -73,13 +73,28 @@ export const documentApi = {
   /**
    * 上传文件
    * @param file     文件
-   * @param category 1=主文件 2=附件
+   * @param category 1=主文件（当前系统只使用主文件类型）
    */
-  uploadFile: (file: File, category: 1 | 2 = 2) => {
+  uploadFile: (file: File, category: 1 | 2 = 1) => {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('category', String(category));
     return request.post('/document/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      timeout: 120000
+    });
+  },
+
+  /**
+   * 上传文件到 Dify 知识流水线
+   * @param file     文件
+   * @param category 1=主文件（当前系统只使用主文件类型）
+   */
+  uploadFileToDifyPipeline: (file: File, category: 1 | 2 = 1) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('category', String(category));
+    return request.post('/document/upload-pipeline', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 120000
     });
@@ -130,13 +145,11 @@ export const documentApi = {
   getDifyStatus: (id: number) =>
     request.get(`/document/dify-status/${id}`),
 
-  /** 对文档进行向量化处理 */
-  vectorizeDocument: (id: number) =>
-    request.post(`/document/vectorize/${id}`),
+  /** 运行文档的 Dify 知识流水线解析 */
+  runPipeline: (id: number) =>
+    request.post(`/document/run-pipeline/${id}`),
 
-  /** 删除文档的向量化数据 */
-  deleteVectorizedDocument: (id: number) =>
-    request.delete(`/document/vectorize/${id}`)
+
 };
 
 export default documentApi;
